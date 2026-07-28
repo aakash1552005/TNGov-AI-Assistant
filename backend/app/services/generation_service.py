@@ -211,9 +211,15 @@ def _build_citations(chunks: list[RetrievedChunk]) -> list[Citation]:
 
     for chunk in chunks:
         meta = chunk.metadata
+        scheme_name = meta.get("scheme_name", "")
+        doc_name = meta.get("document_name", "")
+
+        if not scheme_name or scheme_name == "Unknown" or not doc_name or doc_name == "Unknown":
+            continue
+
         key = (
-            meta.get("scheme_name", ""),
-            meta.get("document_name", ""),
+            scheme_name,
+            doc_name,
             meta.get("page_number"),
         )
 

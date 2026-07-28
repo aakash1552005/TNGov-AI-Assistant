@@ -10,12 +10,16 @@ import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
+from typing import Any
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api import chat
 from app.core.config import settings
 from app.db.base import Base
 from app.db.session import engine
+from app.rag import bm25_index, vector_store
 
 # ── Logging ──────────────────────────────────────────────────
 logging.basicConfig(
@@ -62,17 +66,42 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ── Routers ──────────────────────────────────────────────────
+app.include_router(chat.router)
+
 
 # ── Routes ───────────────────────────────────────────────────
 @app.get("/health", tags=["system"])
-async def health_check() -> dict[str, str]:
-    """Return a simple health-check response.
+async def health_check() -> dict[str, Any]:
+    """Return health-check status and system component metadata."""
+    chroma_ok = False
+    try:
+        col = vector_store.get_collection()
+        chroma_ok = col is not None
+    except Exception:
+        chroma_ok = False
 
-    Used by Docker health checks and monitoring to verify
-    the backend is running.
-    """
+    bm25_ok = False
+    try:
+        bm25_ok = bm25_index.is_loaded()
+    except Exception:
+        logger.exception("Health check error while verifying BM25 index status")
+        bm25_ok = False
+
+    if settings.llm_provider == "groq":
+        active_model = settings.groq_model
+    elif settings.llm_provider == "gemini":
+        active_model = settings.gemini_model
+    else:
+        active_model = settings.model_name
+
     return {
         "status": "healthy",
         "app": settings.app_name,
         "version": settings.app_version,
+        "chroma_db_loaded": chroma_ok,
+        "bm25_index_loaded": bm25_ok,
+        "llm_provider": settings.llm_provider,
+        "llm_model": active_model,
+        "embedding_model": settings.embedding_model,
     }

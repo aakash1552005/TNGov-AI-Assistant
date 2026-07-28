@@ -130,17 +130,30 @@ def test_collection(temp_chroma_dir):
     - Builds a BM25 index over the same chunks
     """
     # Patch settings before importing modules that read them
-    with patch("app.core.config.settings") as mock_settings:
+    with patch("app.core.config.settings") as mock_settings, \
+         patch("app.rag.vector_store.settings") as mock_vs_settings, \
+         patch("app.rag.bm25_index.settings") as mock_bm25_settings, \
+         patch("app.services.generation_service.settings") as mock_gen_settings:
+
         # Copy all real settings, override only what we need
         from app.core.config import Settings
 
         real_settings = Settings()
         for field_name in Settings.model_fields:
-            setattr(mock_settings, field_name, getattr(real_settings, field_name))
+            val = getattr(real_settings, field_name)
+            setattr(mock_settings, field_name, val)
+            setattr(mock_vs_settings, field_name, val)
+            setattr(mock_bm25_settings, field_name, val)
+            setattr(mock_gen_settings, field_name, val)
 
-        mock_settings.chroma_db_path = temp_chroma_dir
-        mock_settings.chroma_collection_name = "test_retrieval"
-        mock_settings.bm25_index_path = os.path.join(temp_chroma_dir, "test_bm25.json")
+        test_chroma_path = temp_chroma_dir
+        test_collection_name = "test_retrieval"
+        test_bm25_path = os.path.join(temp_chroma_dir, "test_bm25.json")
+
+        for s in (mock_settings, mock_vs_settings, mock_bm25_settings, mock_gen_settings):
+            s.chroma_db_path = test_chroma_path
+            s.chroma_collection_name = test_collection_name
+            s.bm25_index_path = test_bm25_path
 
         # Reset module-level state
         import app.rag.vector_store as vs

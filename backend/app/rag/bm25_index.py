@@ -193,3 +193,9 @@ def get_stats() -> dict:
         "index_loaded": _bm25 is not None,
         "index_path": settings.bm25_index_path,
     }
+
+
+def is_loaded() -> bool:
+    """Return True if the BM25 index is loaded into memory (triggers lazy loading if needed)."""
+    _ensure_loaded()
+    return _bm25 is not None
