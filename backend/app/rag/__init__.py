@@ -1,1 +1,1 @@
-"""RAG pipeline package — retrieval and generation logic added in Milestone 2-4."""
+"""RAG pipeline package — vector store, BM25 index, retrieval, and generation."""

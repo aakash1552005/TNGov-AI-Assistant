@@ -63,3 +63,10 @@ htmlcov/
 *.log
 *.bak
 *.tmp
+
+# ─── Ingestion & Indexes ──────────────────────────────────────
+bm25_index.json
+backend/bm25_index.json
+data/metadata/ingested_hashes.json
+data/logs/*.json
+logs/*.json

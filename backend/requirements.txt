@@ -9,6 +9,19 @@ sqlalchemy>=2.0
 asyncpg>=0.30
 alembic>=1.14
 
+# ─── Ingestion & RAG ─────────────────────────────────────────
+langchain-text-splitters>=0.3
+chromadb>=0.5
+pymupdf>=1.25
+sentence-transformers>=3.0
+transformers>=4.40
+
+# ─── Retrieval & LLM ─────────────────────────────────────────
+rank-bm25>=0.2
+openai>=1.30
+google-genai>=0.1
+groq>=0.9
+
 # ─── Utilities ────────────────────────────────────────────────
 python-dotenv>=1.0
 

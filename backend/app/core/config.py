@@ -31,15 +31,42 @@ class Settings(BaseSettings):
     # ── Database ─────────────────────────────────────────────
     database_url: str = "postgresql+asyncpg://postgres:postgres@postgres:5432/tngov"
 
-    # ── OpenAI / LLM (used in later milestones) ─────────────
+    # ── LLM Settings ─────────────────────────────────────────
+    llm_provider: str = "openai"
     openai_api_key: str = ""
     model_name: str = "gpt-4.1"
+    gemini_api_key: str = ""
+    gemini_model: str = "gemini-2.0-flash"
+    groq_api_key: str = ""
+    groq_model: str = "llama-3.3-70b-versatile"
+    llm_temperature: float = 0.0
+    llm_max_tokens: int = 1024
+    max_query_length: int = 500
 
-    # ── Embeddings (used in later milestones) ────────────────
+    # ── Embeddings ───────────────────────────────────────────
     embedding_model: str = "intfloat/multilingual-e5-large"
 
-    # ── ChromaDB (used in later milestones) ──────────────────
+    # ── ChromaDB ─────────────────────────────────────────────
     chroma_db_path: str = "./chroma_db"
+    chroma_collection_name: str = "tn_gov_schemes"
+
+    # ── Ingestion ────────────────────────────────────────────
+    chunk_size: int = 700
+    chunk_overlap: int = 125
+    embedding_batch_size: int = 32
+    chroma_upsert_batch_size: int = 100
+    data_dir: str = "../data"
+    pipeline_version: str = "1.0"
+
+    # ── Retrieval ────────────────────────────────────────────
+    retrieval_vector_top_k: int = 5
+    retrieval_bm25_top_k: int = 5
+    retrieval_final_context_k: int = 4
+    retrieval_min_score: float = 0.015
+    retrieval_max_vector_distance: float = 0.25
+    retrieval_min_bm25_score: float = 5.0
+    rrf_k: int = 60
+    bm25_index_path: str = "./bm25_index.json"
 
     # ── Server ───────────────────────────────────────────────
     backend_host: str = "0.0.0.0"

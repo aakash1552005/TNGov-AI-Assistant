@@ -39,9 +39,15 @@ format-check: ## Check formatting without modifying files
 	docker compose exec backend black --check app/
 	docker compose exec backend ruff check app/
 
-# ─── Ingestion (Milestone 2+) ────────────────────────────────
+# ─── Ingestion (Milestone 2) ──────────────────────────────────
 ingest: ## Run document ingestion pipeline
-	@echo "Ingestion pipeline not yet implemented (Milestone 2)"
+	docker compose exec backend python -m ingestion.cli ingest
+
+ingest-stats: ## Show ChromaDB collection statistics
+	docker compose exec backend python -m ingestion.cli stats
+
+ingest-clear: ## Clear ChromaDB collection
+	docker compose exec backend python -m ingestion.cli clear
 
 # ─── Evaluation (Milestone 7+) ───────────────────────────────
 evaluate: ## Run RAGAS evaluation suite
