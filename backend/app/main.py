@@ -40,6 +40,14 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
         await conn.run_sync(Base.metadata.create_all)
     logger.info("Database tables created / verified")
 
+    # Pre-warm vector store embedding model & BM25 index
+    try:
+        vector_store.get_collection()
+        bm25_index._ensure_loaded()
+        logger.info("Vector store embedding model and BM25 index pre-warmed successfully")
+    except Exception:
+        logger.exception("Failed to pre-warm vector store or BM25 index")
+
     yield  # ← application runs here
 
     await engine.dispose()
@@ -58,9 +66,10 @@ app = FastAPI(
 )
 
 # ── Middleware ───────────────────────────────────────────────
+origins = [o.strip() for o in settings.allowed_origins.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
+    allow_origins=origins if origins else ["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

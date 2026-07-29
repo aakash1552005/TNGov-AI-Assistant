@@ -18,6 +18,7 @@ from app.rag.retrieval_models import (
     RetrievedChunk,
 )
 from app.rag.retrieval_service import RetrievalService
+from app.utils.sanitizer import sanitize_query
 
 logger = logging.getLogger(__name__)
 
@@ -70,9 +71,10 @@ def answer_question(query: str) -> GenerationResponse:
         and retrieval metadata.
     """
     start = time.monotonic()
+    clean_query = sanitize_query(query)
 
     # 1. Validate query length
-    if len(query) > settings.max_query_length:
+    if len(clean_query) > settings.max_query_length:
         return GenerationResponse(
             answer=(
                 f"Your question is too long (max {settings.max_query_length} "
@@ -91,9 +93,9 @@ def answer_question(query: str) -> GenerationResponse:
 
     # 2. Retrieve chunks
     try:
-        chunks = _retrieval_service.retrieve(query)
+        chunks = _retrieval_service.retrieve(clean_query)
     except Exception as exc:
-        logger.exception("Retrieval failed for query: %s", query[:80])
+        logger.exception("Retrieval failed for query: %s", clean_query[:80])
         return GenerationResponse(
             answer="Unable to search for relevant information at the moment. Please try again later.",
             citations=[],
@@ -167,9 +169,9 @@ def answer_question(query: str) -> GenerationResponse:
     llm_called = True
     try:
         client = _get_llm_client()
-        answer = client.generate(query, context_strings)
+        answer = client.generate(clean_query, context_strings)
     except Exception as exc:
-        logger.exception("LLM call failed for query: %s", query[:80])
+        logger.exception("LLM call failed for query: %s", clean_query[:80])
         answer = "Unable to generate a response at the moment. Please try again later."
         llm_called = False  # Failed, not truly called successfully
 

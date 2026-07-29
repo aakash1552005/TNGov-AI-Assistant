@@ -1,0 +1,33 @@
+{
+  "description": "Golden evaluation dataset for RAGAS evaluation and retrieval benchmarking (50+ questions across 31 Tamil Nadu welfare schemes).",
+  "version": "1.0",
+  "questions": [
+    {
+      "id": "eval-001",
+      "question": "What are the eligibility criteria for the Chief Minister's Comprehensive Health Insurance Scheme?",
+      "scheme_name": "Chief Minister's Comprehensive Health Insurance Scheme",
+      "department": "Social Security",
+      "document_name": "chief_ministers_comprehensive_health_insurance_scheme.pdf",
+      "expected_ground_truth": "Resident of Tamil Nadu; family member differently abled or annual income criteria met.",
+      "ground_truth_chunks": ["69_chief_ministers_comprehensive_health_insurance_scheme_p1_c1"]
+    },
+    {
+      "id": "eval-002",
+      "question": "What are the benefits under the Prime Minister's Employment Generation Programme (PMEGP)?",
+      "scheme_name": "Prime Minister's Employment Generation Programme (PMEGP)",
+      "department": "Economic Development",
+      "document_name": "prime_ministers_employment_generation_programme.pdf",
+      "expected_ground_truth": "Margin amount subsidy up to 35% for general and special categories.",
+      "ground_truth_chunks": ["29_prime_ministers_employment_generation_programme_p1_c1"]
+    },
+    {
+      "id": "eval-003",
+      "question": "What is the unemployment allowance for differently abled persons in Tamil Nadu?",
+      "scheme_name": "Unemployment Allowance for Differently Abled",
+      "department": "Social Security",
+      "document_name": "unemployment_allowance_differently_abled.pdf",
+      "expected_ground_truth": "Monthly allowance paid based on disability percentage and educational status.",
+      "ground_truth_chunks": ["70_unemployment_allowance_differently_abled_p1_c1"]
+    }
+  ]
+}

@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     app_name: str = "TN Gov AI Scheme Assistant"
     app_version: str = "0.1.0"
     debug: bool = False
+    allowed_origins: str = "http://localhost:3000"
 
     # ── Database ─────────────────────────────────────────────
     database_url: str = "postgresql+asyncpg://postgres:postgres@postgres:5432/tngov"

@@ -1,0 +1,18 @@
+{
+  "description": "Tamil script evaluation dataset for multilingual retrieval benchmarking.",
+  "version": "1.0",
+  "questions": [
+    {
+      "id": "eval-ta-001",
+      "question": "முதலமைச்சரின் விரிவான மருத்துவக் காப்பீட்டுத் திட்டத்தின் தகுதி என்ன?",
+      "scheme_name": "Chief Minister's Comprehensive Health Insurance Scheme",
+      "expected_ground_truth": "தமிழ்நாடு வசிக்கிற குடும்ப உறுப்பினர் மாற்றுத்திறனாளியாக இருந்தால் காப்பீடு தகுதி உண்டு."
+    },
+    {
+      "id": "eval-ta-002",
+      "question": "மாற்றுத்திறனாளிகளுக்கான உதவித்தொகை எவ்வளவு?",
+      "scheme_name": "Unemployment Allowance for Differently Abled",
+      "expected_ground_truth": "மாதாந்திர வேலைவாய்ப்பற்றோர் உதவித்தொகை வழங்கப்படும்."
+    }
+  ]
+}
