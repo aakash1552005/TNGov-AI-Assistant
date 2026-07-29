@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 
 interface Citation {
   scheme_name: string;
@@ -20,6 +20,8 @@ interface RetrievalMetadata {
 }
 
 interface ChatResponse {
+  session_id: string;
+  message_id?: string;
   answer: string;
   citations: Citation[];
   retrieval_metadata: RetrievalMetadata;
@@ -32,16 +34,26 @@ interface Message {
   citations?: Citation[];
   metadata?: RetrievalMetadata;
   timestamp: string;
+  messageId?: string;
+  feedbackRating?: "up" | "down" | null;
 }
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+const SESSION_STORAGE_KEY = "tngov_chat_session_id";
+
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [historyError, setHistoryError] = useState<string | null>(null);
+  const [feedbackError, setFeedbackError] = useState<string | null>(null);
+  const [commentingMsgId, setCommentingMsgId] = useState<string | null>(null);
+  const [feedbackComment, setFeedbackComment] = useState("");
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -52,6 +64,62 @@ export default function Home() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, loading]);
+
+  const loadHistory = useCallback(async (targetSessionId: string) => {
+    setHistoryError(null);
+    try {
+      const res = await fetch(`${API_BASE_URL}/chat/${targetSessionId}`);
+      if (!res.ok) {
+        if (res.status === 404) {
+          // Session is genuinely missing/deleted on server — clear local session
+          localStorage.removeItem(SESSION_STORAGE_KEY);
+          setSessionId(null);
+        } else {
+          // Database or server error (e.g. Postgres down) — DO NOT clear session_id
+          setHistoryError(
+            "Could not load conversation history from database. Server is currently unreachable."
+          );
+        }
+        return;
+      }
+
+      const data = await res.json();
+      if (data.messages && Array.isArray(data.messages)) {
+        const loadedMessages: Message[] = data.messages.map(
+          (m: {
+            id: string;
+            role: "user" | "assistant";
+            content: string;
+            created_at: string;
+          }) => ({
+            id: m.id,
+            role: m.role,
+            content: m.content,
+            timestamp: new Date(m.created_at).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+            messageId: m.role === "assistant" ? m.id : undefined,
+          })
+        );
+        setMessages(loadedMessages);
+      }
+    } catch (err) {
+      // Connection failure — DO NOT clear session_id
+      setHistoryError(
+        "Could not connect to backend to load conversation history."
+      );
+    }
+  }, []);
+
+  // Load existing session history on initial mount
+  useEffect(() => {
+    const storedSessionId = localStorage.getItem(SESSION_STORAGE_KEY);
+    if (!storedSessionId) return;
+
+    setSessionId(storedSessionId);
+    loadHistory(storedSessionId);
+  }, [loadHistory]);
 
   const sampleQuestions = [
     {
@@ -96,12 +164,19 @@ export default function Home() {
     setLoading(true);
 
     try {
+      const payload: { question: string; session_id?: string } = {
+        question: userMessage.content,
+      };
+      if (sessionId) {
+        payload.session_id = sessionId;
+      }
+
       const res = await fetch(`${API_BASE_URL}/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ question: userMessage.content }),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
@@ -118,12 +193,19 @@ export default function Home() {
 
       const data: ChatResponse = await res.json();
 
+      // Persist session ID
+      if (data.session_id) {
+        setSessionId(data.session_id);
+        localStorage.setItem(SESSION_STORAGE_KEY, data.session_id);
+      }
+
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
         content: data.answer,
         citations: data.citations,
         metadata: data.retrieval_metadata,
+        messageId: data.message_id,
         timestamp: new Date().toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
@@ -140,11 +222,59 @@ export default function Home() {
     }
   };
 
+  const handleFeedback = async (
+    msg: Message,
+    rating: "up" | "down",
+    commentText?: string
+  ) => {
+    if (!msg.messageId) {
+      setFeedbackError("Cannot submit feedback for unpersisted response.");
+      return;
+    }
+
+    // Optimistically update rating state in UI
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === msg.id ? { ...m, feedbackRating: rating } : m
+      )
+    );
+    setCommentingMsgId(null);
+    setFeedbackComment("");
+    setFeedbackError(null);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/feedback`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message_id: msg.messageId,
+          rating,
+          comment: commentText || undefined,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Feedback submission failed.");
+      }
+    } catch (err) {
+      setFeedbackError(
+        "Could not submit feedback to server. Your chat is unaffected."
+      );
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
+  };
+
+  const clearSession = () => {
+    localStorage.removeItem(SESSION_STORAGE_KEY);
+    setSessionId(null);
+    setMessages([]);
+    setHistoryError(null);
   };
 
   return (
@@ -178,12 +308,25 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface border border-border/80 text-xs">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span className="text-muted font-medium">Verified RAG Pipeline</span>
+          <div className="flex items-center gap-3">
+            {sessionId && (
+              <button
+                onClick={clearSession}
+                className="px-3 py-1.5 rounded-lg bg-surface border border-border/80 text-xs text-muted hover:text-foreground hover:border-red-500/40 transition-colors"
+                title="Start a fresh chat session"
+              >
+                New Chat
+              </button>
+            )}
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface border border-border/80 text-xs">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span className="text-muted font-medium">
+                PostgreSQL Persisted
+              </span>
+            </div>
           </div>
         </div>
       </header>
@@ -191,8 +334,38 @@ export default function Home() {
       {/* ── Main Scrollable Container ─────────────────────────────── */}
       <main className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 scroll-smooth">
         <div className="max-w-4xl mx-auto space-y-6">
+          {/* Non-blocking History Error Toast */}
+          {historyError && (
+            <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center justify-between gap-3 shadow-md animate-fade-in">
+              <div className="flex items-center gap-2">
+                <svg
+                  className="w-4 h-4 text-amber-400 flex-shrink-0"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+                  />
+                </svg>
+                <span>{historyError}</span>
+              </div>
+              {sessionId && (
+                <button
+                  onClick={() => loadHistory(sessionId)}
+                  className="px-3 py-1 rounded-md bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-200 font-medium transition-colors"
+                >
+                  Retry Loading
+                </button>
+              )}
+            </div>
+          )}
+
           {/* Welcome Screen when no messages */}
-          {messages.length === 0 && (
+          {messages.length === 0 && !historyError && (
             <div className="my-8 text-center space-y-6 animate-fade-in">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-surface border border-border shadow-xl">
                 <svg
@@ -280,7 +453,9 @@ export default function Home() {
                       </span>
                     )}
                     <span>
-                      {msg.metadata.llm_called ? "LLM Generated" : "Direct Response"}
+                      {msg.metadata.llm_called
+                        ? "LLM Generated"
+                        : "Direct Response"}
                     </span>
                   </div>
                 )}
@@ -367,6 +542,79 @@ export default function Home() {
                     </div>
                   </div>
                 )}
+
+              {/* Feedback Controls for Assistant Messages */}
+              {msg.role === "assistant" && (
+                <div className="flex flex-col items-start gap-2 pt-1">
+                  <div className="flex items-center gap-2 text-xs text-muted">
+                    <span className="text-[11px]">Was this helpful?</span>
+                    <button
+                      onClick={() => handleFeedback(msg, "up")}
+                      className={`p-1.5 rounded-lg border transition-colors ${
+                        msg.feedbackRating === "up"
+                          ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-400"
+                          : "bg-surface border-border/60 hover:border-primary/40 hover:text-foreground"
+                      }`}
+                      title="Thumbs Up"
+                    >
+                      👍
+                    </button>
+                    <button
+                      onClick={() => handleFeedback(msg, "down")}
+                      className={`p-1.5 rounded-lg border transition-colors ${
+                        msg.feedbackRating === "down"
+                          ? "bg-red-500/20 border-red-500/50 text-red-400"
+                          : "bg-surface border-border/60 hover:border-primary/40 hover:text-foreground"
+                      }`}
+                      title="Thumbs Down"
+                    >
+                      👎
+                    </button>
+                    {msg.feedbackRating && (
+                      <span className="text-[11px] text-emerald-400 font-medium">
+                        Thanks for your feedback!
+                      </span>
+                    )}
+                    {!msg.feedbackRating && msg.messageId && (
+                      <button
+                        onClick={() =>
+                          setCommentingMsgId(
+                            commentingMsgId === msg.id ? null : msg.id
+                          )
+                        }
+                        className="text-[11px] text-muted/70 hover:text-accent underline"
+                      >
+                        Add comment
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Optional Comment Input Box */}
+                  {commentingMsgId === msg.id && (
+                    <div className="flex items-center gap-2 w-full max-w-md pt-1 animate-fade-in">
+                      <input
+                        type="text"
+                        value={feedbackComment}
+                        onChange={(e) => setFeedbackComment(e.target.value)}
+                        placeholder="Optional comment (e.g. Needs more eligibility details)"
+                        className="flex-1 bg-surface border border-border/80 rounded-lg px-3 py-1.5 text-xs text-foreground focus:outline-none focus:border-primary/60"
+                      />
+                      <button
+                        onClick={() =>
+                          handleFeedback(
+                            msg,
+                            msg.feedbackRating || "up",
+                            feedbackComment
+                          )
+                        }
+                        className="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-medium hover:opacity-90 transition-opacity"
+                      >
+                        Submit
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           ))}
 
@@ -393,7 +641,20 @@ export default function Home() {
             </div>
           )}
 
-          {/* Error Banner */}
+          {/* Non-blocking Feedback Error Toast */}
+          {feedbackError && (
+            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center justify-between gap-3 animate-fade-in shadow-md">
+              <span>⚠️ {feedbackError}</span>
+              <button
+                onClick={() => setFeedbackError(null)}
+                className="text-amber-400 hover:text-amber-200 underline font-medium"
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
+
+          {/* Chat Error Banner */}
           {error && (
             <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs flex items-center justify-between gap-3 shadow-lg">
               <div className="flex items-center gap-2">

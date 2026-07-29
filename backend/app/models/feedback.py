@@ -1,20 +1,23 @@
-"""Feedback model — user ratings on chat responses.
+"""Feedback ORM model — user ratings on assistant responses.
 
-Matches the ``feedback`` table defined in the project specification.
+Table:
+- ``feedback``: Stores thumbs up/down ratings and optional comments.
 """
+
+from __future__ import annotations
 
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, Text, func
+from sqlalchemy import DateTime, ForeignKey, String, Text, func
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
 
 class Feedback(Base):
-    """User feedback for a specific chat response."""
+    """User feedback rating for a specific assistant chat message."""
 
     __tablename__ = "feedback"
 
@@ -23,19 +26,31 @@ class Feedback(Base):
         primary_key=True,
         default=uuid.uuid4,
     )
-    chat_id: Mapped[uuid.UUID] = mapped_column(
+    message_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
-        ForeignKey("chat_history.id", ondelete="CASCADE"),
+        ForeignKey("chat_messages.id", ondelete="CASCADE"),
         nullable=False,
+        index=True,
     )
-    helpful: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
-    rating: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    comment: Mapped[str | None] = mapped_column(Text, nullable=True)
+    rating: Mapped[str] = mapped_column(
+        String(10),
+        nullable=False,  # "up" | "down"
+    )
+    comment: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True,
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
         nullable=False,
     )
 
+    # Relationship back to chat message
+    message: Mapped[ChatMessage] = relationship(
+        "ChatMessage",
+        back_populates="feedback",
+    )
+
     def __repr__(self) -> str:
-        return f"<Feedback(id={self.id!r}, helpful={self.helpful!r})>"
+        return f"<Feedback(id={self.id!r}, rating={self.rating!r})>"
