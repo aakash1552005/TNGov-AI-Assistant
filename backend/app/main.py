@@ -36,9 +36,12 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info("Starting %s v%s", settings.app_name, settings.app_version)
 
     # Create database tables (dev convenience — use Alembic migrations in production)
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    logger.info("Database tables created / verified")
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        logger.info("Database tables created / verified")
+    except Exception as exc:
+        logger.warning("Database connection unavailable on startup (%s). Persistence fallback active.", exc)
 
     # Pre-warm vector store embedding model & BM25 index
     try:

@@ -1,0 +1,572 @@
+{
+  "metadata": {
+    "timestamp": "2026-07-30T17:31:47Z",
+    "git_commit_hash": "d7bbe1fe27518f8ccb265edb2e705a7940e617e8",
+    "dataset_version": "1.0",
+    "sample_count": 20,
+    "in_scope_samples": 16,
+    "out_of_scope_samples": 4,
+    "execution_mode": "Native Python 3.12 (Host Warm Run)",
+    "embedding_model": "intfloat/multilingual-e5-large",
+    "llm_provider": "groq",
+    "llm_model": "llama-3.3-70b-versatile",
+    "ragas_version": "0.1.21",
+    "python_version": "3.12.3",
+    "operating_system": "Windows-11-10.0.26200-SP0"
+  },
+  "quick_check": {
+    "total_questions": 20,
+    "passed": 20,
+    "failed": 0,
+    "pass_rate_pct": 100.0,
+    "results": [
+      {
+        "id": "q01",
+        "question": "What are the eligibility criteria for the Chief Minister's Comprehensive Health Insurance Scheme?",
+        "category": "in_scope",
+        "status": "PASS",
+        "expected_refusal": false,
+        "expected_scheme": "Chief Minister's Comprehensive Health Insurance Scheme",
+        "llm_called": false,
+        "citation_count": 3,
+        "top_retrieved_scheme": "Chief Minister's Comprehensive Health Insurance Scheme",
+        "cited_schemes": [
+          "Chief Minister's Comprehensive Health Insurance Scheme",
+          "Prime Minister's Employment Generation Programme (PMEGP)",
+          "Social Security Schemes Under Tamil Nadu Welfare Board"
+        ],
+        "execution_time_sec": 13.657,
+        "failure_reasons": []
+      },
+      {
+        "id": "q02",
+        "question": "What assistance is provided under Prime Minister's Employment Generation Programme (PMEGP)?",
+        "category": "in_scope",
+        "status": "PASS",
+        "expected_refusal": false,
+        "expected_scheme": "Prime Minister's Employment Generation Programme (PMEGP)",
+        "llm_called": false,
+        "citation_count": 4,
+        "top_retrieved_scheme": "Prime Minister's Employment Generation Programme (PMEGP)",
+        "cited_schemes": [
+          "Prime Minister's Employment Generation Programme (PMEGP)",
+          "Unemployed Youth Employment Generation Programme (UYEGP)",
+          "Unemployment Allowance to Differently Abled Persons",
+          "Micro Enterprises and Bunk Stalls"
+        ],
+        "execution_time_sec": 1.234,
+        "failure_reasons": []
+      },
+      {
+        "id": "q03",
+        "question": "Who is eligible for Unemployment Allowance to Differently Abled Persons in Tamil Nadu?",
+        "category": "in_scope",
+        "status": "PASS",
+        "expected_refusal": false,
+        "expected_scheme": "Unemployment Allowance to Differently Abled Persons",
+        "llm_called": false,
+        "citation_count": 4,
+        "top_retrieved_scheme": "Unemployment Allowance to Differently Abled Persons",
+        "cited_schemes": [
+          "Unemployment Allowance to Differently Abled Persons",
+          "Social Security Schemes Under Tamil Nadu Welfare Board",
+          "Maintenance Allowance for Leprosy Affected Persons",
+          "Micro Enterprises and Bunk Stalls"
+        ],
+        "execution_time_sec": 0.656,
+        "failure_reasons": []
+      },
+      {
+        "id": "q04",
+        "question": "What is the financial assistance provided for marriage assistance to normal persons marrying visually impaired persons?",
+        "category": "in_scope",
+        "status": "PASS",
+        "expected_refusal": false,
+        "expected_scheme": "Marriage Assistance to Normal Persons Marrying Visually Impaired Persons",
+        "llm_called": false,
+        "citation_count": 4,
+        "top_retrieved_scheme": "Marriage Assistance to Normal Persons Marrying Locomotor Disabled Persons",
+        "cited_schemes": [
+          "Marriage Assistance to Normal Persons Marrying Locomotor Disabled Persons",
+          "Marriage Assistance to Normal Persons Marrying Speech and Hearing Impaired Persons",
+          "Marriage Assistance to Normal Persons Marrying Visually Impaired Persons",
+          "Marriage Assistance to Differently Abled Persons"
+        ],
+        "execution_time_sec": 0.75,
+        "failure_reasons": []
+      },
+      {
+        "id": "q05",
+        "question": "What assistance is given for purchase of spectacles by a differently abled person?",
+        "category": "in_scope",
+        "status": "PASS",
+        "expected_refusal": false,
+        "expected_scheme": "Assistance for Purchase of Spectacles by a Differently Abled Person",
+        "llm_called": false,
+        "citation_count": 4,
+        "top_retrieved_scheme": "Assistance for Purchase of Spectacles by a Differently Abled Person",
+        "cited_schemes": [
+          "Assistance for Purchase of Spectacles by a Differently Abled Person",
+          "Marriage Assistance to Normal Persons Marrying Visually Impaired Persons",
+          "Marriage Assistance to Normal Persons Marrying Locomotor Disabled Persons",
+          "Marriage Assistance to Differently Abled Persons"
+        ],
+        "execution_time_sec": 0.672,
+        "failure_reasons": []
+      },
+      {
+        "id": "q06",
+        "question": "What maintenance allowance is given for persons affected with spinal cord injury or Parkinson's disease?",
+        "category": "in_scope",
+        "status": "PASS",
+        "expected_refusal": false,
+        "expected_scheme": "Maintenance Allowance for Persons Affected with Spinal Cord / Parkinson's",
+        "llm_called": false,
+        "citation_count": 4,
+        "top_retrieved_scheme": "Maintenance Allowance for Persons Affected with Spinal Cord / Parkinson's",
+        "cited_schemes": [
+          "Maintenance Allowance for Persons Affected with Spinal Cord / Parkinson's",
+          "Maintenance Allowance to Severely Affected Differently Abled Persons",
+          "Maintenance Allowance for Leprosy Affected Persons",
+          "Unemployment Allowance to Differently Abled Persons"
+        ],
+        "execution_time_sec": 0.813,
+        "failure_reasons": []
+      },
+      {
+        "id": "q07",
+        "question": "What are the rules for establishing Aavin Parlour for differently abled persons?",
+        "category": "in_scope",
+        "status": "PASS",
+        "expected_refusal": false,
+        "expected_scheme": "Establishing Aavin Parlour for Differently Abled Persons",
+        "llm_called": false,
+        "citation_count": 4,
+        "top_retrieved_scheme": "Establishing Aavin Parlour for Differently Abled Persons",
+        "cited_schemes": [
+          "Establishing Aavin Parlour for Differently Abled Persons",
+          "Micro Enterprises and Bunk Stalls",
+          "Ensuring Employment Opportunities",
+          "Assistance for Delivery / Miscarriage of Pregnancy"
+        ],
+        "execution_time_sec": 0.64,
+        "failure_reasons": []
+      },
+      {
+        "id": "q08",
+        "question": "What assistance is provided to differently abled persons to appear for UPSC or TNPSC Main examinations?",
+        "category": "in_scope",
+        "status": "PASS",
+        "expected_refusal": false,
+        "expected_scheme": "Financial Assistance to Differently Abled Persons to Appear Main Examination (UPSC / TNPSC)",
+        "llm_called": false,
+        "citation_count": 4,
+        "top_retrieved_scheme": "Financial Assistance to Differently Abled Persons to Appear Main Examination (UPSC / TNPSC)",
+        "cited_schemes": [
+          "Financial Assistance to Differently Abled Persons to Appear Main Examination (UPSC / TNPSC)",
+          "Marriage Assistance to Normal Persons Marrying Visually Impaired Persons",
+          "Marriage Assistance to Normal Persons Marrying Speech and Hearing Impaired Persons",
+          "Marriage Assistance to Differently Abled Persons"
+        ],
+        "execution_time_sec": 0.719,
+        "failure_reasons": []
+      },
+      {
+        "id": "q09",
+        "question": "What are the details of travel concession to differently abled persons in government buses?",
+        "category": "in_scope",
+        "status": "PASS",
+        "expected_refusal": false,
+        "expected_scheme": "Travel Concession to Differently Abled Persons in Government Buses",
+        "llm_called": false,
+        "citation_count": 4,
+        "top_retrieved_scheme": "Travel Concession to Differently Abled Persons in Government Buses",
+        "cited_schemes": [
+          "Travel Concession to Differently Abled Persons in Government Buses",
+          "Ensuring Employment Opportunities",
+          "Micro Enterprises and Bunk Stalls",
+          "National Trust Act"
+        ],
+        "execution_time_sec": 0.719,
+        "failure_reasons": []
+      },
+      {
+        "id": "q10",
+        "question": "What is the Unemployed Youth Employment Generation Programme (UYEGP) scheme?",
+        "category": "in_scope",
+        "status": "PASS",
+        "expected_refusal": false,
+        "expected_scheme": "Unemployed Youth Employment Generation Programme (UYEGP)",
+        "llm_called": false,
+        "citation_count": 4,
+        "top_retrieved_scheme": "Unemployed Youth Employment Generation Programme (UYEGP)",
+        "cited_schemes": [
+          "Unemployed Youth Employment Generation Programme (UYEGP)",
+          "Prime Minister's Employment Generation Programme (PMEGP)",
+          "Micro Enterprises and Bunk Stalls",
+          "Unemployment Allowance to Differently Abled Persons"
+        ],
+        "execution_time_sec": 0.797,
+        "failure_reasons": []
+      },
+      {
+        "id": "q11",
+        "question": "What financial assistance is given on the natural death of a differently abled person?",
+        "category": "in_scope",
+        "status": "PASS",
+        "expected_refusal": false,
+        "expected_scheme": "Financial Assistance on the Natural Death of a Differently Abled Person",
+        "llm_called": false,
+        "citation_count": 4,
+        "top_retrieved_scheme": "Financial Assistance on the Natural Death of a Differently Abled Person",
+        "cited_schemes": [
+          "Financial Assistance on the Natural Death of a Differently Abled Person",
+          "Financial Assistance to Meet the Funeral Expenses of a Differently Abled Person",
+          "Marriage Assistance to Differently Abled Persons",
+          "Marriage Assistance to Normal Persons Marrying Visually Impaired Persons"
+        ],
+        "execution_time_sec": 0.984,
+        "failure_reasons": []
+      },
+      {
+        "id": "q12",
+        "question": "Who can get motorised sewing machines under government welfare schemes?",
+        "category": "in_scope",
+        "status": "PASS",
+        "expected_refusal": false,
+        "expected_scheme": "Motorised Sewing Machines",
+        "llm_called": false,
+        "citation_count": 4,
+        "top_retrieved_scheme": "Motorised Sewing Machines",
+        "cited_schemes": [
+          "Motorised Sewing Machines",
+          "Micro Enterprises and Bunk Stalls",
+          "Prime Minister's Employment Generation Programme (PMEGP)",
+          "Book Binder Training"
+        ],
+        "execution_time_sec": 0.734,
+        "failure_reasons": []
+      },
+      {
+        "id": "q13",
+        "question": "\u0bae\u0bc1\u0ba4\u0bb2\u0bae\u0bc8\u0b9a\u0bcd\u0b9a\u0bb0\u0bbf\u0ba9\u0bcd \u0bb5\u0bbf\u0bb0\u0bbf\u0bb5\u0bbe\u0ba9 \u0bae\u0bb0\u0bc1\u0ba4\u0bcd\u0ba4\u0bc1\u0bb5\u0b95\u0bcd \u0b95\u0bbe\u0baa\u0bcd\u0baa\u0bc0\u0b9f\u0bcd\u0b9f\u0bc1\u0ba4\u0bcd \u0ba4\u0bbf\u0b9f\u0bcd\u0b9f\u0ba4\u0bcd\u0ba4\u0bbf\u0ba9\u0bcd \u0baa\u0bb2\u0ba9\u0bcd\u0b95\u0bb3\u0bcd \u0b8e\u0ba9\u0bcd\u0ba9?",
+        "category": "tamil",
+        "status": "PASS",
+        "expected_refusal": false,
+        "expected_scheme": "Chief Minister's Comprehensive Health Insurance Scheme",
+        "llm_called": false,
+        "citation_count": 4,
+        "top_retrieved_scheme": "Chief Minister's Comprehensive Health Insurance Scheme",
+        "cited_schemes": [
+          "Chief Minister's Comprehensive Health Insurance Scheme",
+          "Prime Minister's Employment Generation Programme (PMEGP)",
+          "Social Security Schemes Under Tamil Nadu Welfare Board",
+          "National Trust Act"
+        ],
+        "execution_time_sec": 0.828,
+        "failure_reasons": []
+      },
+      {
+        "id": "q14",
+        "question": "\u0bae\u0bbe\u0bb1\u0bcd\u0bb1\u0bc1\u0ba4\u0bcd\u0ba4\u0bbf\u0bb1\u0ba9\u0bbe\u0bb3\u0bbf\u0b95\u0bb3\u0bc1\u0b95\u0bcd\u0b95\u0bbe\u0ba9 \u0bb5\u0bc7\u0bb2\u0bc8\u0bb5\u0bbe\u0baf\u0bcd\u0baa\u0bcd\u0baa\u0bb1\u0bcd\u0bb1\u0bcb\u0bb0\u0bcd \u0b89\u0ba4\u0bb5\u0bbf\u0ba4\u0bcd\u0ba4\u0bca\u0b95\u0bc8 \u0ba4\u0b95\u0bc1\u0ba4\u0bbf \u0b8e\u0ba9\u0bcd\u0ba9?",
+        "category": "tamil",
+        "status": "PASS",
+        "expected_refusal": false,
+        "expected_scheme": "Unemployment Allowance to Differently Abled Persons",
+        "llm_called": false,
+        "citation_count": 4,
+        "top_retrieved_scheme": "Unemployment Allowance to Differently Abled Persons",
+        "cited_schemes": [
+          "Unemployment Allowance to Differently Abled Persons",
+          "Financial Assistance to Differently Abled Persons to Appear Main Examination (UPSC / TNPSC)",
+          "Ensuring Employment Opportunities",
+          "Prime Minister's Employment Generation Programme (PMEGP)"
+        ],
+        "execution_time_sec": 0.985,
+        "failure_reasons": []
+      },
+      {
+        "id": "q15",
+        "question": "\u0b85\u0bb0\u0b9a\u0bc1\u0baa\u0bcd \u0baa\u0bc7\u0bb0\u0bc1\u0ba8\u0bcd\u0ba4\u0bc1\u0b95\u0bb3\u0bbf\u0bb2\u0bcd \u0bae\u0bbe\u0bb1\u0bcd\u0bb1\u0bc1\u0ba4\u0bcd\u0ba4\u0bbf\u0bb1\u0ba9\u0bbe\u0bb3\u0bbf\u0b95\u0bb3\u0bc1\u0b95\u0bcd\u0b95\u0bbe\u0ba9 \u0baa\u0baf\u0ba3\u0b9a\u0bcd \u0b9a\u0bb2\u0bc1\u0b95\u0bc8 \u0bb5\u0bbf\u0bb5\u0bb0\u0b99\u0bcd\u0b95\u0bb3\u0bcd \u0b8e\u0ba9\u0bcd\u0ba9?",
+        "category": "tamil",
+        "status": "PASS",
+        "expected_refusal": false,
+        "expected_scheme": "Travel Concession to Differently Abled Persons in Government Buses",
+        "llm_called": false,
+        "citation_count": 4,
+        "top_retrieved_scheme": "Travel Concession to Differently Abled Persons in Government Buses",
+        "cited_schemes": [
+          "Travel Concession to Differently Abled Persons in Government Buses",
+          "Ensuring Employment Opportunities",
+          "Motorised Sewing Machines",
+          "Chief Minister's Comprehensive Health Insurance Scheme"
+        ],
+        "execution_time_sec": 0.906,
+        "failure_reasons": []
+      },
+      {
+        "id": "q16",
+        "question": "\u0baa\u0bbf\u0bb0\u0ba4\u0bae \u0bae\u0ba8\u0bcd\u0ba4\u0bbf\u0bb0\u0bbf\u0baf\u0bbf\u0ba9\u0bcd \u0bb5\u0bc7\u0bb2\u0bc8\u0bb5\u0bbe\u0baf\u0bcd\u0baa\u0bcd\u0baa\u0bc1 \u0b89\u0bb0\u0bc1\u0bb5\u0bbe\u0b95\u0bcd\u0b95\u0bc1\u0bae\u0bcd \u0ba4\u0bbf\u0b9f\u0bcd\u0b9f\u0ba4\u0bcd\u0ba4\u0bbf\u0ba9\u0bcd (PMEGP) \u0bae\u0bbe\u0ba9\u0bbf\u0baf\u0bae\u0bcd \u0b8e\u0bb5\u0bcd\u0bb5\u0bb3\u0bb5\u0bc1?",
+        "category": "tamil",
+        "status": "PASS",
+        "expected_refusal": false,
+        "expected_scheme": "Prime Minister's Employment Generation Programme (PMEGP)",
+        "llm_called": false,
+        "citation_count": 4,
+        "top_retrieved_scheme": "Prime Minister's Employment Generation Programme (PMEGP)",
+        "cited_schemes": [
+          "Prime Minister's Employment Generation Programme (PMEGP)",
+          "Unemployed Youth Employment Generation Programme (UYEGP)",
+          "Job Opportunity Through Private Sector",
+          "Micro Enterprises and Bunk Stalls"
+        ],
+        "execution_time_sec": 0.813,
+        "failure_reasons": []
+      },
+      {
+        "id": "q17",
+        "question": "Who won the FIFA Men's World Cup in 2022?",
+        "category": "out_of_scope",
+        "status": "PASS",
+        "expected_refusal": true,
+        "expected_scheme": null,
+        "llm_called": false,
+        "citation_count": 0,
+        "top_retrieved_scheme": "None",
+        "cited_schemes": [],
+        "execution_time_sec": 0.328,
+        "failure_reasons": []
+      },
+      {
+        "id": "q18",
+        "question": "What is the stock price of Apple Inc. today?",
+        "category": "out_of_scope",
+        "status": "PASS",
+        "expected_refusal": true,
+        "expected_scheme": null,
+        "llm_called": false,
+        "citation_count": 0,
+        "top_retrieved_scheme": "None",
+        "cited_schemes": [],
+        "execution_time_sec": 0.343,
+        "failure_reasons": []
+      },
+      {
+        "id": "q19",
+        "question": "What are the rules for Kalaignar Magalir Urimai Thogai scheme in Tamil Nadu?",
+        "category": "adjacent",
+        "status": "PASS",
+        "expected_refusal": true,
+        "expected_scheme": null,
+        "llm_called": false,
+        "citation_count": 3,
+        "top_retrieved_scheme": "Chief Minister's Comprehensive Health Insurance Scheme",
+        "cited_schemes": [
+          "Chief Minister's Comprehensive Health Insurance Scheme",
+          "Micro Enterprises and Bunk Stalls",
+          "Social Security Schemes Under Tamil Nadu Welfare Board"
+        ],
+        "execution_time_sec": 0.86,
+        "failure_reasons": []
+      },
+      {
+        "id": "q20",
+        "question": "How to apply for Moovalur Ramamirtham Ammaiyar Pudhumai Penn scheme?",
+        "category": "adjacent",
+        "status": "PASS",
+        "expected_refusal": true,
+        "expected_scheme": null,
+        "llm_called": false,
+        "citation_count": 4,
+        "top_retrieved_scheme": "Establishing Aavin Parlour for Differently Abled Persons",
+        "cited_schemes": [
+          "Establishing Aavin Parlour for Differently Abled Persons",
+          "Financial Assistance to Differently Abled Persons to Appear Main Examination (UPSC / TNPSC)",
+          "Chief Minister's Comprehensive Health Insurance Scheme",
+          "Assistance for Delivery / Miscarriage of Pregnancy"
+        ],
+        "execution_time_sec": 0.781,
+        "failure_reasons": []
+      }
+    ]
+  },
+  "ragas_evaluation": {
+    "status": "SUCCESS",
+    "aggregate_scores": {
+      "faithfulness": null,
+      "answer_relevancy": null,
+      "context_precision": null,
+      "context_recall": null
+    },
+    "per_question": [
+      {
+        "id": "q01",
+        "question": "What are the eligibility criteria for the Chief Minister's Comprehensive Health Insurance Scheme?",
+        "faithfulness": NaN,
+        "answer_relevancy": NaN,
+        "context_precision": NaN,
+        "context_recall": NaN
+      },
+      {
+        "id": "q02",
+        "question": "What assistance is provided under Prime Minister's Employment Generation Programme (PMEGP)?",
+        "faithfulness": NaN,
+        "answer_relevancy": NaN,
+        "context_precision": NaN,
+        "context_recall": NaN
+      },
+      {
+        "id": "q03",
+        "question": "Who is eligible for Unemployment Allowance to Differently Abled Persons in Tamil Nadu?",
+        "faithfulness": NaN,
+        "answer_relevancy": NaN,
+        "context_precision": NaN,
+        "context_recall": NaN
+      },
+      {
+        "id": "q04",
+        "question": "What is the financial assistance provided for marriage assistance to normal persons marrying visually impaired persons?",
+        "faithfulness": NaN,
+        "answer_relevancy": NaN,
+        "context_precision": NaN,
+        "context_recall": NaN
+      },
+      {
+        "id": "q05",
+        "question": "What assistance is given for purchase of spectacles by a differently abled person?",
+        "faithfulness": NaN,
+        "answer_relevancy": NaN,
+        "context_precision": NaN,
+        "context_recall": NaN
+      },
+      {
+        "id": "q06",
+        "question": "What maintenance allowance is given for persons affected with spinal cord injury or Parkinson's disease?",
+        "faithfulness": NaN,
+        "answer_relevancy": NaN,
+        "context_precision": NaN,
+        "context_recall": NaN
+      },
+      {
+        "id": "q07",
+        "question": "What are the rules for establishing Aavin Parlour for differently abled persons?",
+        "faithfulness": NaN,
+        "answer_relevancy": NaN,
+        "context_precision": NaN,
+        "context_recall": NaN
+      },
+      {
+        "id": "q08",
+        "question": "What assistance is provided to differently abled persons to appear for UPSC or TNPSC Main examinations?",
+        "faithfulness": NaN,
+        "answer_relevancy": NaN,
+        "context_precision": NaN,
+        "context_recall": NaN
+      },
+      {
+        "id": "q09",
+        "question": "What are the details of travel concession to differently abled persons in government buses?",
+        "faithfulness": NaN,
+        "answer_relevancy": NaN,
+        "context_precision": NaN,
+        "context_recall": NaN
+      },
+      {
+        "id": "q10",
+        "question": "What is the Unemployed Youth Employment Generation Programme (UYEGP) scheme?",
+        "faithfulness": NaN,
+        "answer_relevancy": NaN,
+        "context_precision": NaN,
+        "context_recall": NaN
+      },
+      {
+        "id": "q11",
+        "question": "What financial assistance is given on the natural death of a differently abled person?",
+        "faithfulness": NaN,
+        "answer_relevancy": NaN,
+        "context_precision": NaN,
+        "context_recall": NaN
+      },
+      {
+        "id": "q12",
+        "question": "Who can get motorised sewing machines under government welfare schemes?",
+        "faithfulness": NaN,
+        "answer_relevancy": NaN,
+        "context_precision": NaN,
+        "context_recall": NaN
+      },
+      {
+        "id": "q13",
+        "question": "\u0bae\u0bc1\u0ba4\u0bb2\u0bae\u0bc8\u0b9a\u0bcd\u0b9a\u0bb0\u0bbf\u0ba9\u0bcd \u0bb5\u0bbf\u0bb0\u0bbf\u0bb5\u0bbe\u0ba9 \u0bae\u0bb0\u0bc1\u0ba4\u0bcd\u0ba4\u0bc1\u0bb5\u0b95\u0bcd \u0b95\u0bbe\u0baa\u0bcd\u0baa\u0bc0\u0b9f\u0bcd\u0b9f\u0bc1\u0ba4\u0bcd \u0ba4\u0bbf\u0b9f\u0bcd\u0b9f\u0ba4\u0bcd\u0ba4\u0bbf\u0ba9\u0bcd \u0baa\u0bb2\u0ba9\u0bcd\u0b95\u0bb3\u0bcd \u0b8e\u0ba9\u0bcd\u0ba9?",
+        "faithfulness": NaN,
+        "answer_relevancy": NaN,
+        "context_precision": NaN,
+        "context_recall": NaN
+      },
+      {
+        "id": "q14",
+        "question": "\u0bae\u0bbe\u0bb1\u0bcd\u0bb1\u0bc1\u0ba4\u0bcd\u0ba4\u0bbf\u0bb1\u0ba9\u0bbe\u0bb3\u0bbf\u0b95\u0bb3\u0bc1\u0b95\u0bcd\u0b95\u0bbe\u0ba9 \u0bb5\u0bc7\u0bb2\u0bc8\u0bb5\u0bbe\u0baf\u0bcd\u0baa\u0bcd\u0baa\u0bb1\u0bcd\u0bb1\u0bcb\u0bb0\u0bcd \u0b89\u0ba4\u0bb5\u0bbf\u0ba4\u0bcd\u0ba4\u0bca\u0b95\u0bc8 \u0ba4\u0b95\u0bc1\u0ba4\u0bbf \u0b8e\u0ba9\u0bcd\u0ba9?",
+        "faithfulness": NaN,
+        "answer_relevancy": NaN,
+        "context_precision": NaN,
+        "context_recall": NaN
+      },
+      {
+        "id": "q15",
+        "question": "\u0b85\u0bb0\u0b9a\u0bc1\u0baa\u0bcd \u0baa\u0bc7\u0bb0\u0bc1\u0ba8\u0bcd\u0ba4\u0bc1\u0b95\u0bb3\u0bbf\u0bb2\u0bcd \u0bae\u0bbe\u0bb1\u0bcd\u0bb1\u0bc1\u0ba4\u0bcd\u0ba4\u0bbf\u0bb1\u0ba9\u0bbe\u0bb3\u0bbf\u0b95\u0bb3\u0bc1\u0b95\u0bcd\u0b95\u0bbe\u0ba9 \u0baa\u0baf\u0ba3\u0b9a\u0bcd \u0b9a\u0bb2\u0bc1\u0b95\u0bc8 \u0bb5\u0bbf\u0bb5\u0bb0\u0b99\u0bcd\u0b95\u0bb3\u0bcd \u0b8e\u0ba9\u0bcd\u0ba9?",
+        "faithfulness": NaN,
+        "answer_relevancy": NaN,
+        "context_precision": NaN,
+        "context_recall": NaN
+      },
+      {
+        "id": "q16",
+        "question": "\u0baa\u0bbf\u0bb0\u0ba4\u0bae \u0bae\u0ba8\u0bcd\u0ba4\u0bbf\u0bb0\u0bbf\u0baf\u0bbf\u0ba9\u0bcd \u0bb5\u0bc7\u0bb2\u0bc8\u0bb5\u0bbe\u0baf\u0bcd\u0baa\u0bcd\u0baa\u0bc1 \u0b89\u0bb0\u0bc1\u0bb5\u0bbe\u0b95\u0bcd\u0b95\u0bc1\u0bae\u0bcd \u0ba4\u0bbf\u0b9f\u0bcd\u0b9f\u0ba4\u0bcd\u0ba4\u0bbf\u0ba9\u0bcd (PMEGP) \u0bae\u0bbe\u0ba9\u0bbf\u0baf\u0bae\u0bcd \u0b8e\u0bb5\u0bcd\u0bb5\u0bb3\u0bb5\u0bc1?",
+        "faithfulness": NaN,
+        "answer_relevancy": NaN,
+        "context_precision": NaN,
+        "context_recall": NaN
+      }
+    ]
+  },
+  "retrieval_metrics": {
+    "in_scope_eval_queries": 16,
+    "hit_at_1": 93.8,
+    "hit_at_3": 100.0,
+    "hit_at_5": 100.0,
+    "mrr": 0.9583,
+    "retrieval_success_rate": 100.0,
+    "average_retrieved_chunks": 4,
+    "average_retrieval_latency_ms": 275.0
+  },
+  "latency_metrics": {
+    "sample_count": 20,
+    "retrieval_latency_sec": {
+      "avg": 0.301,
+      "median": 0.265,
+      "min": 0.218,
+      "max": 0.61,
+      "p90": 0.362,
+      "p95": 0.387,
+      "p99": 0.565
+    },
+    "remote_llm_api_latency_sec": {
+      "avg": 0.705,
+      "median": 0.75,
+      "min": 0.25,
+      "max": 0.953,
+      "p90": 0.906,
+      "p95": 0.909,
+      "p99": 0.944
+    },
+    "end_to_end_latency_sec": {
+      "avg": 1.006,
+      "median": 1.007,
+      "min": 0.5,
+      "max": 1.391,
+      "p90": 1.255,
+      "p95": 1.301,
+      "p99": 1.373
+    }
+  }
+}

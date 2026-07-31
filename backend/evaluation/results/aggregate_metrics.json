@@ -1,0 +1,43 @@
+{
+  "metadata": {
+    "timestamp": "2026-07-30T17:31:47Z",
+    "git_commit_hash": "d7bbe1fe27518f8ccb265edb2e705a7940e617e8",
+    "dataset_version": "1.0",
+    "sample_count": 20,
+    "in_scope_samples": 16,
+    "out_of_scope_samples": 4,
+    "execution_mode": "Native Python 3.12 (Host Warm Run)",
+    "embedding_model": "intfloat/multilingual-e5-large",
+    "llm_provider": "groq",
+    "llm_model": "llama-3.3-70b-versatile",
+    "ragas_version": "0.1.21",
+    "python_version": "3.12.3",
+    "operating_system": "Windows-11-10.0.26200-SP0"
+  },
+  "quick_check_pass_rate_pct": 100.0,
+  "retrieval_metrics": {
+    "in_scope_eval_queries": 16,
+    "hit_at_1": 93.8,
+    "hit_at_3": 100.0,
+    "hit_at_5": 100.0,
+    "mrr": 0.9583,
+    "retrieval_success_rate": 100.0,
+    "average_retrieved_chunks": 4,
+    "average_retrieval_latency_ms": 275.0
+  },
+  "ragas_aggregate_scores": {
+    "faithfulness": null,
+    "answer_relevancy": null,
+    "context_precision": null,
+    "context_recall": null
+  },
+  "latency_percentiles_sec": {
+    "avg": 1.006,
+    "median": 1.007,
+    "min": 0.5,
+    "max": 1.391,
+    "p90": 1.255,
+    "p95": 1.301,
+    "p99": 1.373
+  }
+}

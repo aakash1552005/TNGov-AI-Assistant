@@ -1,0 +1,182 @@
+[
+  {
+    "id": "q01",
+    "question": "What are the eligibility criteria for the Chief Minister's Comprehensive Health Insurance Scheme?",
+    "language": "en",
+    "category": "in_scope",
+    "expected_scheme": "Chief Minister's Comprehensive Health Insurance Scheme",
+    "expected_refusal": false,
+    "notes": "Queries eligibility details for CMCHIS health insurance scheme."
+  },
+  {
+    "id": "q02",
+    "question": "What assistance is provided under Prime Minister's Employment Generation Programme (PMEGP)?",
+    "language": "en",
+    "category": "in_scope",
+    "expected_scheme": "Prime Minister's Employment Generation Programme (PMEGP)",
+    "expected_refusal": false,
+    "notes": "Queries subsidy margin amount and loan assistance for PMEGP."
+  },
+  {
+    "id": "q03",
+    "question": "Who is eligible for Unemployment Allowance to Differently Abled Persons in Tamil Nadu?",
+    "language": "en",
+    "category": "in_scope",
+    "expected_scheme": "Unemployment Allowance to Differently Abled Persons",
+    "expected_refusal": false,
+    "notes": "Queries eligibility rules for unemployment allowance for disabled persons."
+  },
+  {
+    "id": "q04",
+    "question": "What is the financial assistance provided for marriage assistance to normal persons marrying visually impaired persons?",
+    "language": "en",
+    "category": "in_scope",
+    "expected_scheme": "Marriage Assistance to Normal Persons Marrying Visually Impaired Persons",
+    "expected_refusal": false,
+    "notes": "Queries marriage assistance for marrying visually impaired persons."
+  },
+  {
+    "id": "q05",
+    "question": "What assistance is given for purchase of spectacles by a differently abled person?",
+    "language": "en",
+    "category": "in_scope",
+    "expected_scheme": "Assistance for Purchase of Spectacles by a Differently Abled Person",
+    "expected_refusal": false,
+    "notes": "Queries spectacle purchase financial assistance scheme."
+  },
+  {
+    "id": "q06",
+    "question": "What maintenance allowance is given for persons affected with spinal cord injury or Parkinson's disease?",
+    "language": "en",
+    "category": "in_scope",
+    "expected_scheme": "Maintenance Allowance for Persons Affected with Spinal Cord / Parkinson's",
+    "expected_refusal": false,
+    "notes": "Queries monthly maintenance allowance for spinal cord/Parkinson's patients."
+  },
+  {
+    "id": "q07",
+    "question": "What are the rules for establishing Aavin Parlour for differently abled persons?",
+    "language": "en",
+    "category": "in_scope",
+    "expected_scheme": "Establishing Aavin Parlour for Differently Abled Persons",
+    "expected_refusal": false,
+    "notes": "Queries Aavin milk parlour allotment scheme for disabled entrepreneurs."
+  },
+  {
+    "id": "q08",
+    "question": "What assistance is provided to differently abled persons to appear for UPSC or TNPSC Main examinations?",
+    "language": "en",
+    "category": "in_scope",
+    "expected_scheme": "Financial Assistance to Differently Abled Persons to Appear Main Examination (UPSC / TNPSC)",
+    "expected_refusal": false,
+    "notes": "Queries competitive exam financial assistance for main exams."
+  },
+  {
+    "id": "q09",
+    "question": "What are the details of travel concession to differently abled persons in government buses?",
+    "language": "en",
+    "category": "in_scope",
+    "expected_scheme": "Travel Concession to Differently Abled Persons in Government Buses",
+    "expected_refusal": false,
+    "notes": "Queries bus pass and travel concessions in state transport buses."
+  },
+  {
+    "id": "q10",
+    "question": "What is the Unemployed Youth Employment Generation Programme (UYEGP) scheme?",
+    "language": "en",
+    "category": "in_scope",
+    "expected_scheme": "Unemployed Youth Employment Generation Programme (UYEGP)",
+    "expected_refusal": false,
+    "notes": "Queries UYEGP self-employment loan and subsidy scheme details."
+  },
+  {
+    "id": "q11",
+    "question": "What financial assistance is given on the natural death of a differently abled person?",
+    "language": "en",
+    "category": "in_scope",
+    "expected_scheme": "Financial Assistance on the Natural Death of a Differently Abled Person",
+    "expected_refusal": false,
+    "notes": "Queries natural death relief assistance for disabled welfare board members."
+  },
+  {
+    "id": "q12",
+    "question": "Who can get motorised sewing machines under government welfare schemes?",
+    "language": "en",
+    "category": "in_scope",
+    "expected_scheme": "Motorised Sewing Machines",
+    "expected_refusal": false,
+    "notes": "Queries free motorised sewing machine distribution scheme."
+  },
+  {
+    "id": "q13",
+    "question": "முதலமைச்சரின் விரிவான மருத்துவக் காப்பீட்டுத் திட்டத்தின் பலன்கள் என்ன?",
+    "language": "ta",
+    "category": "tamil",
+    "expected_scheme": "Chief Minister's Comprehensive Health Insurance Scheme",
+    "expected_refusal": false,
+    "notes": "Tamil query regarding CMCHIS health insurance scheme benefits."
+  },
+  {
+    "id": "q14",
+    "question": "மாற்றுத்திறனாளிகளுக்கான வேலைவாய்ப்பற்றோர் உதவித்தொகை தகுதி என்ன?",
+    "language": "ta",
+    "category": "tamil",
+    "expected_scheme": "Unemployment Allowance to Differently Abled Persons",
+    "expected_refusal": false,
+    "notes": "Tamil query regarding unemployment allowance for disabled individuals."
+  },
+  {
+    "id": "q15",
+    "question": "அரசுப் பேருந்துகளில் மாற்றுத்திறனாளிகளுக்கான பயணச் சலுகை விவரங்கள் என்ன?",
+    "language": "ta",
+    "category": "tamil",
+    "expected_scheme": "Travel Concession to Differently Abled Persons in Government Buses",
+    "expected_refusal": false,
+    "notes": "Tamil query regarding bus travel concessions for disabled persons."
+  },
+  {
+    "id": "q16",
+    "question": "பிரதம மந்திரியின் வேலைவாய்ப்பு உருவாக்கும் திட்டத்தின் (PMEGP) மானியம் எவ்வளவு?",
+    "language": "ta",
+    "category": "tamil",
+    "expected_scheme": "Prime Minister's Employment Generation Programme (PMEGP)",
+    "expected_refusal": false,
+    "notes": "Tamil query regarding PMEGP margin money subsidy details."
+  },
+  {
+    "id": "q17",
+    "question": "Who won the FIFA Men's World Cup in 2022?",
+    "language": "en",
+    "category": "out_of_scope",
+    "expected_scheme": null,
+    "expected_refusal": true,
+    "notes": "General sports trivia query (completely out of domain)."
+  },
+  {
+    "id": "q18",
+    "question": "What is the stock price of Apple Inc. today?",
+    "language": "en",
+    "category": "out_of_scope",
+    "expected_scheme": null,
+    "expected_refusal": true,
+    "notes": "Financial market query (completely out of domain)."
+  },
+  {
+    "id": "q19",
+    "question": "What are the rules for Kalaignar Magalir Urimai Thogai scheme in Tamil Nadu?",
+    "language": "en",
+    "category": "adjacent",
+    "expected_scheme": null,
+    "expected_refusal": true,
+    "notes": "Adjacent TN scheme query that is NOT part of the 31 ingested scheme PDFs."
+  },
+  {
+    "id": "q20",
+    "question": "How to apply for Moovalur Ramamirtham Ammaiyar Pudhumai Penn scheme?",
+    "language": "en",
+    "category": "adjacent",
+    "expected_scheme": null,
+    "expected_refusal": true,
+    "notes": "Adjacent TN higher education scheme query NOT part of the ingested PDFs."
+  }
+]
