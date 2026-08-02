@@ -23,7 +23,6 @@ from typing import Any
 from evaluation.metrics.latency_benchmark import run_latency_benchmark
 from evaluation.metrics.retrieval_evaluator import evaluate_retrieval
 from evaluation.quick_check import run_quick_check
-from evaluation.run_ragas import run_ragas_eval
 
 from app.core.config import settings
 
@@ -41,7 +40,11 @@ def _get_git_commit() -> str:
 
 def _get_system_metadata() -> dict[str, Any]:
     """Gather environment, execution, and model metadata required for benchmarks."""
-    import ragas
+    try:
+        import ragas
+        ragas_ver = getattr(ragas, "__version__", "0.1.21")
+    except Exception:
+        ragas_ver = "PARTIAL/NOT_INSTALLED"
 
     llm_model = settings.groq_model if settings.llm_provider == "groq" else settings.model_name
     return {
@@ -55,7 +58,7 @@ def _get_system_metadata() -> dict[str, Any]:
         "embedding_model": settings.embedding_model,
         "llm_provider": settings.llm_provider,
         "llm_model": llm_model,
-        "ragas_version": getattr(ragas, "__version__", "0.1.21"),
+        "ragas_version": ragas_ver,
         "python_version": sys.version.split()[0],
         "operating_system": platform.platform(),
     }
@@ -339,8 +342,10 @@ def main() -> None:
     if args.command == "quick-check":
         run_quick_check(dataset_file)
     elif args.command == "ragas":
+        from evaluation.run_ragas import run_ragas_eval
         run_ragas_eval(dataset_file)
     elif args.command == "all":
+        from evaluation.run_ragas import run_ragas_eval
         print("\n" + "=" * 80)
         print("RUNNING COMPLETE MILESTONE 6 EVALUATION SUITE")
         print("=" * 80)

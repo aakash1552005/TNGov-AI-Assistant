@@ -94,7 +94,7 @@ def answer_question(query: str) -> GenerationResponse:
     # 2. Retrieve chunks
     try:
         chunks = _retrieval_service.retrieve(clean_query)
-    except Exception as exc:
+    except Exception:
         logger.exception("Retrieval failed for query: %s", clean_query[:80])
         return GenerationResponse(
             answer="Unable to search for relevant information at the moment. Please try again later.",
@@ -170,7 +170,7 @@ def answer_question(query: str) -> GenerationResponse:
     try:
         client = _get_llm_client()
         answer = client.generate(clean_query, context_strings)
-    except Exception as exc:
+    except Exception:
         logger.exception("LLM call failed for query: %s", clean_query[:80])
         answer = "Unable to generate a response at the moment. Please try again later."
         llm_called = False  # Failed, not truly called successfully

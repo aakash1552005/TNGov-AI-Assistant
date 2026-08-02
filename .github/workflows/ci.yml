@@ -1,0 +1,52 @@
+name: Continuous Integration & Production Quality Gate
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test-and-evaluate:
+    name: Backend Tests & Quality Gate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          pip install ruff
+
+      - name: Run Ruff Linter
+        run: |
+          ruff check backend/app
+
+      - name: Run Pytest Suite
+        run: |
+          cd backend
+          python -m pytest tests/ -v
+
+      - name: Run Evaluation Smoke Test
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          LLM_PROVIDER: groq
+        run: |
+          cd backend
+          python -m evaluation.cli quick-check
+
+      - name: Upload Evaluation Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: evaluation-results
+          path: backend/evaluation/results/

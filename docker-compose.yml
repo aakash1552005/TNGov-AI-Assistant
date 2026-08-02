@@ -1,84 +1,54 @@
 services:
-  # ── Backend (FastAPI) ────────────────────────────────────────
+  # ─── Backend API Service ────────────────────────────────────
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: tngov-backend
+    restart: unless-stopped
     ports:
       - "8000:8000"
-    volumes:
-      - ./backend:/app
-      - ./data:/data
-      - huggingface_cache:/root/.cache/huggingface
+    env_file:
+      - ./backend/.env
     environment:
-      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/tngov
-      - LLM_PROVIDER=${LLM_PROVIDER:-openai}
-      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
-      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
-      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-2.0-flash}
-      - GROQ_API_KEY=${GROQ_API_KEY:-}
-      - GROQ_MODEL=${GROQ_MODEL:-llama-3.3-70b-versatile}
-      - MODEL_NAME=${MODEL_NAME:-gpt-4.1}
-      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-intfloat/multilingual-e5-large}
-      - CHROMA_DB_PATH=${CHROMA_DB_PATH:-./chroma_db}
-      - DATA_DIR=/data
-      - HF_HOME=/root/.cache/huggingface
+      - HOST=0.0.0.0
+      - PORT=8000
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres_secure_pass@db:5432/tngov_ai
+    volumes:
+      - chroma_data:/app/data/chroma_db
+      - bm25_data:/app/data/processed/bm25
     depends_on:
-      postgres:
+      db:
         condition: service_healthy
-    restart: unless-stopped
-    networks:
-      - tngov-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
 
-  # ── Frontend (Next.js) ──────────────────────────────────────
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: tngov-frontend
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-      - /app/.next
-    environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
-      - WATCHPACK_POLLING=true
-    depends_on:
-      - backend
-    restart: unless-stopped
-    networks:
-      - tngov-network
-
-  # ── PostgreSQL ──────────────────────────────────────────────
-  postgres:
+  # ─── PostgreSQL Database Service ───────────────────────────
+  db:
     image: postgres:16-alpine
-    container_name: tngov-postgres
+    container_name: tngov-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_secure_pass
+      POSTGRES_DB: tngov_ai
     ports:
       - "5432:5432"
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=tngov
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d tngov"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
-      timeout: 5s
+      timeout: 3s
       retries: 5
-    restart: unless-stopped
-    networks:
-      - tngov-network
 
 volumes:
+  chroma_data:
+    driver: local
+  bm25_data:
+    driver: local
   postgres_data:
     driver: local
-  huggingface_cache:
-    driver: local
-
-networks:
-  tngov-network:
-    driver: bridge

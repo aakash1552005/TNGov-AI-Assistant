@@ -98,7 +98,7 @@ class RetrievalService:
         metadatas = results["metadatas"][0]
         distances = results["distances"][0]
 
-        for chunk_id, text, meta, dist in zip(ids, documents, metadatas, distances):
+        for chunk_id, text, meta, dist in zip(ids, documents, metadatas, distances, strict=False):
             hits[chunk_id] = (text, meta, dist)
 
         return hits

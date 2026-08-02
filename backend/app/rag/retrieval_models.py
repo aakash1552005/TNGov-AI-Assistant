@@ -7,7 +7,7 @@ a shared module ensures they can be reused unchanged across layers.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 @dataclass

@@ -13,8 +13,8 @@ from __future__ import annotations
 import logging
 from typing import Protocol
 
-import openai
 import groq
+import openai
 from google import genai
 from google.genai import types
 

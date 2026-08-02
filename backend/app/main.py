@@ -9,7 +9,6 @@ Provides:
 import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-
 from typing import Any
 
 from fastapi import FastAPI
