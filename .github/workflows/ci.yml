@@ -21,6 +21,12 @@ jobs:
           python-version: "3.12"
           cache: "pip"
 
+      - name: Cache HuggingFace Models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: ${{ runner.os }}-hf-multilingual-e5-large
+
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
@@ -30,6 +36,11 @@ jobs:
       - name: Run Ruff Linter
         run: |
           ruff check backend/app
+
+      - name: Seed Vector Store & BM25 Index
+        run: |
+          cd backend
+          python -m ingestion.cli ingest --data-dir "${{ github.workspace }}/data" --metadata-file "${{ github.workspace }}/data/metadata/source_log.json" --force
 
       - name: Run Pytest Suite
         run: |
