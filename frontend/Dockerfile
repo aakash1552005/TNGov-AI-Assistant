@@ -27,7 +27,7 @@ FROM node:22-slim AS builder
 WORKDIR /app
 
 # Accept backend URL at build time (required for Next.js NEXT_PUBLIC_ vars)
-ARG NEXT_PUBLIC_API_URL=http://localhost:8000
+ARG NEXT_PUBLIC_API_URL=https://backend-production-0a73.up.railway.app
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
 COPY package.json package-lock.json ./
@@ -52,7 +52,7 @@ COPY --from=builder /app/public ./public
 EXPOSE 3000
 
 # Re-expose NEXT_PUBLIC_API_URL for runtime (needed by client components)
-ARG NEXT_PUBLIC_API_URL=http://localhost:8000
+ARG NEXT_PUBLIC_API_URL=https://backend-production-0a73.up.railway.app
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
 CMD ["node", "server.js"]
