@@ -123,6 +123,7 @@ echo "[CHECK 1/3] PASSED — Path exists: ${CHROMA_DB_PATH}"
 # ── Checks 2 & 3: Collection existence and chunk count ───────────
 echo "[CHECK 2/3] Verifying ChromaDB collection and chunk count..."
 
+set +e
 VALIDATION_OUTPUT=$(python3 - <<'PYTHON_EOF'
 import sys
 import os
@@ -156,8 +157,8 @@ except Exception as e:
     sys.exit(2)
 PYTHON_EOF
 )
-
 PYTHON_EXIT=$?
+set -e
 
 echo "[DEBUG] Python validation script exit code: ${PYTHON_EXIT}, output: ${VALIDATION_OUTPUT}"
 
