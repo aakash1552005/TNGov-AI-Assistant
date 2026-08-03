@@ -104,7 +104,7 @@ fi
 
 if [ "${SEED_NEEDED}" = "1" ] && [ -d "/app/seed_data/chroma_db" ]; then
     echo "[SEED] Seeding ChromaDB persistent volume from /app/seed_data/chroma_db..."
-    rm -rf "${CHROMA_DB_PATH:?}"/*
+    rm -rf "${CHROMA_DB_PATH}"
     mkdir -p "${CHROMA_DB_PATH}"
     cp -rf /app/seed_data/chroma_db/* "${CHROMA_DB_PATH}/"
     echo "[SEED] Seeding complete."
