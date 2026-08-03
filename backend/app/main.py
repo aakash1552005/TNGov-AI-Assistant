@@ -44,6 +44,8 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
 
     # Pre-warm vector store embedding model & BM25 index
     try:
+        from ingestion.embedder import _get_model
+        _get_model()
         vector_store.get_collection()
         bm25_index._ensure_loaded()
         logger.info("Vector store embedding model and BM25 index pre-warmed successfully")

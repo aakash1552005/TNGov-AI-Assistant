@@ -12,9 +12,13 @@ from __future__ import annotations
 
 import logging
 
+import torch
 from sentence_transformers import SentenceTransformer
 
 from app.core.config import settings
+
+# Restrict PyTorch to single-thread execution to save memory on 512MB RAM containers
+torch.set_num_threads(1)
 
 logger = logging.getLogger(__name__)
 
