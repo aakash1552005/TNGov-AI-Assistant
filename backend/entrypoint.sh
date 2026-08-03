@@ -159,6 +159,8 @@ PYTHON_EOF
 
 PYTHON_EXIT=$?
 
+echo "[DEBUG] Python validation script exit code: ${PYTHON_EXIT}, output: ${VALIDATION_OUTPUT}"
+
 # ── Interpret Python probe output ─────────────────────────────────
 case $PYTHON_EXIT in
     0)
