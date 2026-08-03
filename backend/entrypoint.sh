@@ -81,21 +81,32 @@ echo " Collection     : ${COLLECTION_NAME}"
 echo " Expected chunks: ${EXPECTED_CHUNKS}"
 echo "============================================================"
 
-# ── Seed Initialization: Seed persistent volume if empty or invalid ──
+# ── Seed Initialization: Seed persistent volume if empty or model mismatched ──
 SEED_NEEDED=0
 if [ ! -f "${CHROMA_DB_PATH}/chroma.sqlite3" ]; then
     SEED_NEEDED=1
 else
-    HAS_COLLECTION=$(python3 -c "import sqlite3; conn = sqlite3.connect('${CHROMA_DB_PATH}/chroma.sqlite3'); print(len(conn.execute(\"SELECT name FROM collections WHERE name='${COLLECTION_NAME}'\").fetchall()))" 2>/dev/null || echo "0")
-    if [ "${HAS_COLLECTION}" = "0" ]; then
+    MATCHING_MODEL=$(python3 -c "
+import sqlite3
+try:
+    conn = sqlite3.connect('${CHROMA_DB_PATH}/chroma.sqlite3')
+    cur = conn.cursor()
+    rows = cur.execute(\"SELECT string_value FROM collection_metadata WHERE key='embedding_model'\").fetchall()
+    print('1' if rows and rows[0][0] == '${EMBEDDING_MODEL}' else '0')
+except Exception:
+    print('0')
+" 2>/dev/null || echo "0")
+    if [ "${MATCHING_MODEL}" = "0" ]; then
+        echo "[SEED] Volume ChromaDB model does not match '${EMBEDDING_MODEL}' — forcing seed update."
         SEED_NEEDED=1
     fi
 fi
 
-if [ "${SEED_NEEDED}" = "1" ] && [ -d "/app/seed_chroma_db" ]; then
-    echo "[SEED] Seeding ChromaDB persistent volume from /app/seed_chroma_db..."
+if [ "${SEED_NEEDED}" = "1" ] && [ -d "/app/seed_data/chroma_db" ]; then
+    echo "[SEED] Seeding ChromaDB persistent volume from /app/seed_data/chroma_db..."
+    rm -rf "${CHROMA_DB_PATH:?}"/*
     mkdir -p "${CHROMA_DB_PATH}"
-    cp -rf /app/seed_chroma_db/* "${CHROMA_DB_PATH}/"
+    cp -rf /app/seed_data/chroma_db/* "${CHROMA_DB_PATH}/"
     echo "[SEED] Seeding complete."
 fi
 
