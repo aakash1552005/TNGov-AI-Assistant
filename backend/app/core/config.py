@@ -51,7 +51,7 @@ class Settings(BaseSettings):
     max_query_length: int = 500
 
     # ── Embeddings ───────────────────────────────────────────
-    embedding_model: str = "intfloat/multilingual-e5-large"
+    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
 
     # ── ChromaDB ─────────────────────────────────────────────
     chroma_db_path: str = "./chroma_db"
