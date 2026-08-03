@@ -25,9 +25,15 @@ class Settings(BaseSettings):
 
     # ── Application ──────────────────────────────────────────
     app_name: str = "TN Gov AI Scheme Assistant"
-    app_version: str = "0.1.0"
+    app_version: str = "1.0.0"
     debug: bool = False
+    # Deployment environment: development | staging | production
+    app_env: str = "development"
+    # Comma-separated CORS origins — set to deployed frontend URL in production
+    # Example: "https://tngov-ai.vercel.app,http://localhost:3000"
     allowed_origins: str = "http://localhost:3000"
+    # Frontend base URL (used for CORS and link generation)
+    frontend_url: str = "http://localhost:3000"
 
     # ── Database ─────────────────────────────────────────────
     database_url: str = "postgresql+asyncpg://postgres:postgres@postgres:5432/tngov"

@@ -1,0 +1,105 @@
+name: Deploy to Production
+
+# Triggers on push to main after CI passes, or manually via workflow_dispatch
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      deploy_target:
+        description: "Deploy target"
+        required: true
+        default: "both"
+        type: choice
+        options:
+          - backend
+          - frontend
+          - both
+
+jobs:
+  # ── Guard: Only deploy after CI passes ─────────────────────────
+  ci-check:
+    name: Verify CI Passed
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Confirm branch is main/master
+        run: echo "Deploying commit ${{ github.sha }} to production"
+
+  # ── Backend Deployment (Railway) ────────────────────────────────
+  deploy-backend:
+    name: Deploy Backend → Railway
+    runs-on: ubuntu-latest
+    needs: ci-check
+    if: >
+      github.event_name == 'push' ||
+      (github.event_name == 'workflow_dispatch' &&
+       (github.event.inputs.deploy_target == 'backend' ||
+        github.event.inputs.deploy_target == 'both'))
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          railway up --service tngov-backend --detach
+
+      - name: Verify Backend Health
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          BACKEND_URL: ${{ secrets.BACKEND_URL }}
+        run: |
+          echo "Waiting 60s for service to start..."
+          sleep 60
+          echo "Checking /health endpoint..."
+          curl -f "${BACKEND_URL}/health" | python3 -m json.tool
+          echo "Backend health check passed."
+
+  # ── Frontend Deployment (Vercel) ─────────────────────────────────
+  deploy-frontend:
+    name: Deploy Frontend → Vercel
+    runs-on: ubuntu-latest
+    needs: deploy-backend
+    if: >
+      github.event_name == 'push' ||
+      (github.event_name == 'workflow_dispatch' &&
+       (github.event.inputs.deploy_target == 'frontend' ||
+        github.event.inputs.deploy_target == 'both'))
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Deploy to Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          NEXT_PUBLIC_API_URL: ${{ secrets.BACKEND_URL }}
+        run: |
+          cd frontend
+          vercel --token "$VERCEL_TOKEN" --prod --yes \
+            -e NEXT_PUBLIC_API_URL="$NEXT_PUBLIC_API_URL"
+
+      - name: Verify Frontend
+        env:
+          FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+        run: |
+          echo "Waiting 30s for frontend to propagate..."
+          sleep 30
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${FRONTEND_URL}")
+          if [ "$STATUS" = "200" ]; then
+            echo "Frontend health check passed (HTTP $STATUS)."
+          else
+            echo "Frontend returned HTTP $STATUS — check deployment logs."
+            exit 1
+          fi

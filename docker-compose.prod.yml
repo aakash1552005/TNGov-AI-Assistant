@@ -1,0 +1,40 @@
+# =============================================================================
+# docker-compose.prod.yml — Production Compose Override
+# =============================================================================
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# This override:
+#   - Removes localhost port binding for PostgreSQL (not exposed externally)
+#   - Configures ChromaDB and BM25 to use persistent named volumes at /data
+#   - Overrides CHROMA_DB_PATH and BM25_INDEX_PATH for container paths
+#   - Sets APP_ENV=production
+#
+# NOTE: Before first run, initialize ChromaDB explicitly:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml \
+#     run --rm backend python -m ingestion.cli ingest
+# =============================================================================
+
+services:
+  backend:
+    environment:
+      - APP_ENV=production
+      - CHROMA_DB_PATH=/data/chroma_db
+      - BM25_INDEX_PATH=/data/bm25_index.json
+      - DATA_DIR=/data
+    volumes:
+      - chroma_data:/data/chroma_db
+      - bm25_data:/data/processed/bm25
+    restart: always
+
+  db:
+    ports: []  # Do not expose PostgreSQL port externally in production
+    restart: always
+
+volumes:
+  chroma_data:
+    driver: local
+  bm25_data:
+    driver: local
+  postgres_data:
+    driver: local
