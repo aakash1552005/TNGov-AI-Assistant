@@ -23,6 +23,56 @@ CHROMA_DB_PATH="${CHROMA_DB_PATH:-/data/chroma_db}"
 EXPECTED_CHUNKS=31
 COLLECTION_NAME="${CHROMA_COLLECTION_NAME:-tn_gov_schemes}"
 
+# ── INIT_MODE: One-time data seeding ─────────────────────────────
+# Set INIT_MODE=true in Railway variables for the first deploy.
+# This runs the ingestion pipeline to populate ChromaDB on the
+# persistent volume, then starts uvicorn so the deploy succeeds.
+# After the first deploy, REMOVE the INIT_MODE variable and redeploy.
+if [ "${INIT_MODE}" = "true" ]; then
+    echo "============================================================"
+    echo " INIT_MODE=true — Running one-time data initialization"
+    echo "============================================================"
+    echo " ChromaDB path: ${CHROMA_DB_PATH}"
+    echo " Data dir     : ${DATA_DIR:-/app/data}"
+
+    # Ensure the ChromaDB directory exists
+    mkdir -p "${CHROMA_DB_PATH}"
+
+    # Run the ingestion pipeline
+    python3 -m ingestion.cli ingest \
+        --data-dir "${DATA_DIR:-/app/data}" \
+        --force
+
+    # Verify the result
+    INIT_COUNT=$(python3 -c "
+import chromadb
+c = chromadb.PersistentClient(path='${CHROMA_DB_PATH}')
+col = c.get_collection('${COLLECTION_NAME}')
+print(col.count())
+" 2>/dev/null || echo "0")
+
+    echo ""
+    echo "============================================================"
+    echo " Initialization complete. Chunk count: ${INIT_COUNT}"
+    echo "============================================================"
+
+    if [ "${INIT_COUNT}" = "${EXPECTED_CHUNKS}" ]; then
+        echo " SUCCESS: ChromaDB seeded with ${EXPECTED_CHUNKS} chunks."
+        echo " NEXT STEPS:"
+        echo "   1. Remove INIT_MODE variable from Railway"
+        echo "   2. Redeploy the service"
+        echo "============================================================"
+    else
+        echo " WARNING: Expected ${EXPECTED_CHUNKS} chunks but got ${INIT_COUNT}."
+        echo " Check ingestion logs above for errors."
+        echo "============================================================"
+    fi
+
+    # Start uvicorn so the deploy health check passes
+    PORT="${PORT:-8000}"
+    exec uvicorn app.main:app --host 0.0.0.0 --port "${PORT}" --workers 1
+fi
+
 echo "============================================================"
 echo " TN Gov AI Scheme Assistant — Startup Validation"
 echo "============================================================"
