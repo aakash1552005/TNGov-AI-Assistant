@@ -83,7 +83,7 @@ echo "============================================================"
 
 # ── Seed Initialization: Seed persistent volume if empty ─────────
 if [ -d "/app/seed_chroma_db" ]; then
-    if [ ! -d "${CHROMA_DB_PATH}" ] || [ -z "$(ls -A "${CHROMA_DB_PATH}" 2>/dev/null)" ]; then
+    if [ ! -f "${CHROMA_DB_PATH}/chroma.sqlite3" ]; then
         echo "[SEED] Seeding ChromaDB persistent volume from /app/seed_chroma_db..."
         mkdir -p "${CHROMA_DB_PATH}"
         cp -r /app/seed_chroma_db/* "${CHROMA_DB_PATH}/"
