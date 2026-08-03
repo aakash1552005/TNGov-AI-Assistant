@@ -126,32 +126,27 @@ echo "[CHECK 2/3] Verifying ChromaDB collection and chunk count..."
 VALIDATION_OUTPUT=$(python3 - <<'PYTHON_EOF'
 import sys
 import os
+import sqlite3
 
 chroma_path = os.environ.get("CHROMA_DB_PATH", "/data/chroma_db")
 collection_name = os.environ.get("CHROMA_COLLECTION_NAME", "tn_gov_schemes")
 expected_chunks = 31
 
-try:
-    import chromadb
-    client = chromadb.PersistentClient(path=chroma_path)
-except Exception as e:
-    print(f"CHROMADB_CLIENT_ERROR:{e}")
+db_file = os.path.join(chroma_path, "chroma.sqlite3")
+if not os.path.exists(db_file):
+    print(f"CHROMADB_CLIENT_ERROR:{db_file} not found")
     sys.exit(2)
 
-# Check collection exists
 try:
-    existing = [c.name for c in client.list_collections()]
+    conn = sqlite3.connect(db_file)
+    cur = conn.cursor()
+
+    existing = [row[0] for row in cur.execute("SELECT name FROM collections").fetchall()]
     if collection_name not in existing:
         print(f"COLLECTION_MISSING:{collection_name}:AVAILABLE:{','.join(existing) if existing else 'none'}")
         sys.exit(3)
-except Exception as e:
-    print(f"COLLECTION_LIST_ERROR:{e}")
-    sys.exit(2)
 
-# Check chunk count
-try:
-    collection = client.get_collection(collection_name)
-    count = collection.count()
+    count = cur.execute("SELECT count(*) FROM embeddings").fetchone()[0]
     print(f"COUNT:{count}")
     if count != expected_chunks:
         sys.exit(4)
