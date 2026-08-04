@@ -19,6 +19,8 @@ SYNONYM_MAP: dict[str, str] = {
     "old age pension": "Indira Gandhi National Old Age Pension IGNOAPS OAP Social Security",
     "oap": "Indira Gandhi National Old Age Pension IGNOAPS OAP Social Security",
     "girl education": "Moovalur Ramamirtham Ammiyar Higher Education Assurance Scheme Pudhumai Penn",
+    "pudhumai penn": "Moovalur Ramamirtham Ammiyar Higher Education Assurance Scheme Pudhumai Penn",
+    "pudhumai pen": "Moovalur Ramamirtham Ammiyar Higher Education Assurance Scheme Pudhumai Penn",
     "higher education girl": "Pudhumai Penn Scheme Higher Education Assurance",
     "magalir urimai": "Kalaignar Magalir Urimai Thogai Scheme KMUT 1000 rupees",
     "kmut": "Kalaignar Magalir Urimai Thogai Scheme KMUT",
