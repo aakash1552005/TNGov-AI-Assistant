@@ -109,11 +109,9 @@ async def chat(
                 # Fetch recent messages to extract conversational context
                 past_messages = await persistence_service.get_conversation(db, request.session_id)
                 if past_messages:
-                    # Look at the last user message or assistant message to extract context
-                    for m in reversed(past_messages):
-                        if m.role == "user" and m.content != question:
-                            context_prefix = m.content[:100]
-                            break
+                    user_queries = [m.content for m in past_messages if m.role == "user" and m.content != question]
+                    if user_queries:
+                        context_prefix = " ".join(user_queries)[:200]
         else:
             session_obj = await persistence_service.create_session(db)
             active_session_id = session_obj.id
