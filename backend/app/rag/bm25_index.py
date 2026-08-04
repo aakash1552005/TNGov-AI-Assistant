@@ -27,6 +27,12 @@ _chunk_ids: list[str] = []
 _tokenized_corpus: list[list[str]] = []
 
 
+def get_chunk_count() -> int:
+    """Return total number of chunks in the BM25 index."""
+    _ensure_loaded()
+    return len(_chunk_ids)
+
+
 def _tokenize(text: str) -> list[str]:
     """Simple whitespace tokenizer with lowercasing.
 
