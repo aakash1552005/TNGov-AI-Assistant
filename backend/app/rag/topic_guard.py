@@ -38,7 +38,8 @@ _OOD_PATTERNS: list[str] = [
     r"\bnetflix\b", r"\bamazon\s+prime\b", r"\bhotstar\b",
     # Weather
     r"\bweather\b", r"\brain\s+forecast\b", r"\bcyclone\s+track\b",
-    # General
+    # General / Consumer Tech
+    r"\biphone\b", r"\bapple\s+iphone\b", r"\bipad\b", r"\bmacbook\b",
     r"\brecipe\b", r"\bcooking\b", r"\bfashion\b", r"\btravel\s+guide\b",
     r"\bhoroscope\b", r"\bzodiac\b",
 ]
