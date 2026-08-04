@@ -82,23 +82,40 @@ def _check_collection_metadata(collection: chromadb.Collection) -> None:
 def get_collection() -> chromadb.Collection:
     """Get or create the named collection with metadata.
 
-    On retrieval, checks stored metadata against current config
-    and warns if they differ.
+    If an existing collection was built with a different embedding model,
+    it is deleted and recreated to prevent dimension mismatch errors.
 
     Returns:
         The ChromaDB collection for scheme documents.
     """
     client = _get_client()
-    collection = client.get_or_create_collection(
-        name=settings.chroma_collection_name,
-        metadata={
-            _META_EMBEDDING_MODEL: settings.embedding_model,
-            _META_PIPELINE_VERSION: settings.pipeline_version,
-            "hnsw:space": "cosine",
-        },
-    )
-    _check_collection_metadata(collection)
-    return collection
+    col = None
+    try:
+        existing_col = client.get_collection(settings.chroma_collection_name)
+        meta = existing_col.metadata or {}
+        stored_model = meta.get(_META_EMBEDDING_MODEL)
+        if stored_model and stored_model != settings.embedding_model:
+            logger.warning(
+                "COLLECTION CONFIG MISMATCH: Deleting collection built with '%s' (current model: '%s')",
+                stored_model,
+                settings.embedding_model,
+            )
+            client.delete_collection(settings.chroma_collection_name)
+        else:
+            col = existing_col
+    except Exception:
+        col = None
+
+    if col is None:
+        col = client.get_or_create_collection(
+            name=settings.chroma_collection_name,
+            metadata={
+                _META_EMBEDDING_MODEL: settings.embedding_model,
+                _META_PIPELINE_VERSION: settings.pipeline_version,
+                "hnsw:space": "cosine",
+            },
+        )
+    return col
 
 
 # ── Upsert ───────────────────────────────────────────────────
