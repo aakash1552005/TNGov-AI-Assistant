@@ -49,13 +49,16 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
         vector_store.get_collection()
         bm25_index._ensure_loaded()
         
-        # Auto-ingest dataset into persistent volume if chunk count is out of date (< 37)
+        # Auto-ingest dataset into persistent volume if chunk count is out of date (< 37) or model mismatch
+        col = vector_store.get_collection()
+        stored_model = (col.metadata or {}).get("embedding_model")
         current_chunks = vector_store.get_chunk_count()
         bm25_chunks = bm25_index.get_chunk_count()
-        logger.info("Current vector store chunk count: %d, BM25 count: %d", current_chunks, bm25_chunks)
         
-        if current_chunks < 37 or bm25_chunks < 37:
-            logger.info("Auto-ingesting new dataset extractions into persistent volume...")
+        logger.info("Vector store chunks: %d, BM25 chunks: %d, stored model: %s", current_chunks, bm25_chunks, stored_model)
+        
+        if current_chunks < 37 or bm25_chunks < 37 or stored_model != settings.embedding_model:
+            logger.info("Rebuilding vector store & BM25 index for current embedding model (%s)...", settings.embedding_model)
             from pathlib import Path
             from ingestion.pipeline import run_pipeline
             run_pipeline(data_dir=Path(settings.data_dir), force=True)
