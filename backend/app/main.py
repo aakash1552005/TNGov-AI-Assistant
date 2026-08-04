@@ -51,8 +51,10 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
         
         # Auto-ingest dataset into persistent volume if chunk count is out of date (< 37)
         current_chunks = vector_store.get_chunk_count()
-        logger.info("Current vector store chunk count: %d", current_chunks)
-        if current_chunks < 37:
+        bm25_chunks = bm25_index.get_chunk_count()
+        logger.info("Current vector store chunk count: %d, BM25 count: %d", current_chunks, bm25_chunks)
+        
+        if current_chunks < 37 or bm25_chunks < 37:
             logger.info("Auto-ingesting new dataset extractions into persistent volume...")
             from pathlib import Path
             from ingestion.pipeline import run_pipeline
