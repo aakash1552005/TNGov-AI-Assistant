@@ -26,7 +26,7 @@ class Verifier:
         self.failed = 0
 
     def log(self, category: str, status: str, evidence: str):
-        symbol = "✅ PASS" if status == "PASS" else "❌ FAIL"
+        symbol = "[PASS]" if status == "PASS" else "[FAIL]"
         print(f"{symbol} [{category}] {evidence}")
         self.results.append({"category": category, "status": status, "evidence": evidence})
         if status == "PASS":
