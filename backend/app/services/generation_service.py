@@ -1,7 +1,13 @@
-"""Generation service — orchestrates retrieval → relevance check → LLM → citations.
+"""Generation service — orchestrates retrieval → topic guard → LLM → citations.
+
+Pipeline:
+  1. Sanitize query
+  2. Retrieve chunks (hybrid BM25 + vector)
+  3. Pre-LLM topic guard — model-independent refusal for out-of-domain queries
+  4. LLM generation (only reached if guard passes)
+  5. Build citations & return GenerationResponse
 
 Entry point: ``answer_question(query)`` returns a ``GenerationResponse``.
-This module is consumed by the FastAPI API layer in Milestone 4.
 """
 
 from __future__ import annotations
@@ -19,6 +25,7 @@ from app.rag.retrieval_models import (
     RetrievedChunk,
 )
 from app.rag.retrieval_service import RetrievalService
+from app.rag.topic_guard import should_refuse
 from app.utils.sanitizer import sanitize_query
 
 logger = logging.getLogger(__name__)
@@ -43,22 +50,42 @@ def _get_llm_client() -> LLMClient:
         raise RuntimeError(f"Unsupported LLM provider: {settings.llm_provider}")
 
 
-def _build_refusal_response(query: str, chunks: list[RetrievedChunk], vector_count: int, bm25_count: int) -> GenerationResponse:
-    """Build a helpful, diagnostic refusal message with fuzzy match suggestions."""
+def _build_refusal_response(
+    query: str,
+    chunks: list[RetrievedChunk],
+    vector_count: int,
+    bm25_count: int,
+    reason: str = "domain",
+) -> GenerationResponse:
+    """Build a helpful, diagnostic refusal message with fuzzy match suggestions.
+
+    Args:
+        query: The user's original query.
+        chunks: Retrieved chunks (may be empty for out-of-domain).
+        vector_count: Number of vector-matched chunks.
+        bm25_count: Number of BM25-matched chunks.
+        reason: 'domain' | 'threshold' — reason for refusal (for logging).
+    """
+    logger.info("Refusal triggered (reason=%s) for query: %s", reason, query[:80])
     suggestions = suggest_did_you_mean(query)
-    
+
     msg_lines = [
-        "I could not find official information for this query in the currently indexed Tamil Nadu Government dataset.",
-        "\nPossible reasons:",
-        "• The scheme is not yet indexed in our official repository",
+        "This assistant only answers officially indexed Tamil Nadu Government schemes.",
+        "No matching scheme was found for your query.",
+        "",
+        "Possible reasons:",
+        "• Your query may not relate to a Tamil Nadu Government welfare scheme",
         "• The scheme name or spelling may differ from official government terminology",
-        "• It may belong to a department or agency not covered by this system",
+        "• The scheme may not yet be indexed in this system",
     ]
 
     if suggestions:
-        msg_lines.append("\nDid you mean one of these official schemes?")
+        msg_lines.append("")
+        msg_lines.append("You may be looking for one of these official schemes:")
         for s in suggestions:
             msg_lines.append(f"• {s}")
+        msg_lines.append("")
+        msg_lines.append("Try rephrasing with one of the above scheme names.")
 
     msg_lines.append(
         "\n⚠️ This is an AI assistant, not an official government source. "
@@ -130,8 +157,22 @@ def answer_question(query: str, context_prefix: str | None = None) -> Generation
     vector_count = sum(1 for c in chunks if c.vector_score is not None)
     bm25_count = sum(1 for c in chunks if c.bm25_score is not None)
 
-    # 3. Relevance threshold check
+    # 3. Pre-LLM topic guard — model-independent domain relevance check.
+    #    This runs BEFORE any LLM call so refusal is consistent across all
+    #    primary and fallback models.
     top_chunk = chunks[0] if chunks else None
+
+    if should_refuse(clean_query, chunks, top_rrf, settings.retrieval_min_score):
+        logger.info(
+            "Topic guard refused query (top_rrf=%s): %s",
+            f"{top_rrf:.4f}" if top_rrf else "None",
+            clean_query[:80],
+        )
+        return _build_refusal_response(
+            clean_query, chunks, vector_count, bm25_count, reason="domain"
+        )
+
+    # 3b. Secondary retrieval quality check (vector + BM25 thresholds)
     has_relevant_vector = (
         top_chunk is not None
         and top_chunk.vector_score is not None
@@ -156,7 +197,9 @@ def answer_question(query: str, context_prefix: str | None = None) -> Generation
             f"{top_chunk.vector_score:.4f}" if top_chunk and top_chunk.vector_score is not None else "None",
             f"{top_chunk.bm25_score:.4f}" if top_chunk and top_chunk.bm25_score is not None else "None",
         )
-        return _build_refusal_response(clean_query, chunks, vector_count, bm25_count)
+        return _build_refusal_response(
+            clean_query, chunks, vector_count, bm25_count, reason="threshold"
+        )
 
     # Determine confidence level
     confidence_level = "Medium"
@@ -165,13 +208,29 @@ def answer_question(query: str, context_prefix: str | None = None) -> Generation
     elif top_rrf and top_rrf >= 0.030:
         confidence_level = "High"
 
-    # Extract related schemes from retrieved chunks
+    # Extract related schemes — ranked by department match, then RRF score.
+    # Schemes from the same department as the primary result are more relevant.
     related_schemes: list[str] = []
     main_scheme = top_chunk.metadata.get("scheme_name", "") if top_chunk else ""
+    main_dept = top_chunk.metadata.get("department", "") if top_chunk else ""
+
+    # Build candidates with sort key: (dept_match=0 preferred, -rrf_score)
+    candidates: list[tuple[int, float, str]] = []
     for c in chunks:
         scheme = str(c.metadata.get("scheme_name", "")).strip()
-        if scheme and scheme != main_scheme and scheme not in related_schemes:
+        if not scheme or scheme == main_scheme:
+            continue
+        dept = str(c.metadata.get("department", "")).strip()
+        dept_mismatch = 0 if (dept and dept == main_dept) else 1
+        rrf = c.rrf_score if c.rrf_score is not None else 0.0
+        candidates.append((dept_mismatch, -rrf, scheme))
+
+    candidates.sort()
+    seen_related: set[str] = set()
+    for _, _, scheme in candidates:
+        if scheme not in seen_related:
             related_schemes.append(scheme)
+            seen_related.add(scheme)
 
     # 4. Build context strings — only chunk_text goes into the prompt
     context_strings = []
