@@ -48,6 +48,17 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
         _get_model()
         vector_store.get_collection()
         bm25_index._ensure_loaded()
+        
+        # Auto-ingest dataset into persistent volume if chunk count is out of date (< 37)
+        current_chunks = vector_store.get_chunk_count()
+        logger.info("Current vector store chunk count: %d", current_chunks)
+        if current_chunks < 37:
+            logger.info("Auto-ingesting new dataset extractions into persistent volume...")
+            from pathlib import Path
+            from ingestion.pipeline import run_pipeline
+            run_pipeline(data_dir=Path(settings.data_dir), force=True)
+            logger.info("Auto-ingestion complete!")
+            
         logger.info("Vector store embedding model and BM25 index pre-warmed successfully")
     except Exception:
         logger.exception("Failed to pre-warm vector store or BM25 index")
