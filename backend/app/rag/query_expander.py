@@ -79,6 +79,13 @@ KNOWN_SCHEMES: list[str] = [
     "Loan Assistance from National Handicapped Finance & Development Corporation (NHFDC)",
     "Micro Enterprises and Bunk Stalls",
     "Motorised Sewing Machines",
+    "Book Binder Training",
+    "Establishing Aavin Parlour for Differently Abled Persons",
+    "Ensuring Employment Opportunities",
+    "Financial Assistance to Differently Abled Persons to Appear Main Examination (UPSC / TNPSC)",
+    "Fitter Training to Hearing Impaired Persons",
+    "Multimedia Training",
+    "Skill Training",
 ]
 
 
