@@ -256,20 +256,37 @@ class GroqClient:
             {"role": "user", "content": user_content},
         ]
 
-        response = self._get_client().chat.completions.create(
-            model=settings.groq_model,
-            messages=messages,
-            temperature=settings.llm_temperature,
-            max_tokens=settings.llm_max_tokens,
-        )
+        fallback_models = [settings.groq_model, "llama3-8b-8192", "mixtral-8x7b-32768", "gemma2-9b-it"]
+        last_exception = None
 
-        answer = response.choices[0].message.content or ""
-        answer = answer.strip()
+        for model_name in fallback_models:
+            try:
+                logger.info(
+                    "Calling Groq (model=%s, context_chunks=%d, temperature=%s)",
+                    model_name,
+                    len(context),
+                    settings.llm_temperature,
+                )
+                response = self._get_client().chat.completions.create(
+                    model=model_name,
+                    messages=messages,
+                    temperature=settings.llm_temperature,
+                    max_tokens=settings.llm_max_tokens,
+                )
+                answer = response.choices[0].message.content or ""
+                answer = answer.strip()
 
-        logger.info(
-            "Groq response: %d chars",
-            len(answer),
-        )
+                logger.info(
+                    "Groq response from %s: %d chars",
+                    model_name,
+                    len(answer),
+                )
+                return answer
+            except Exception as exc:
+                logger.warning("Groq model '%s' failed: %s. Trying next fallback model...", model_name, exc)
+                last_exception = exc
 
-        return answer
+        if last_exception:
+            raise last_exception
+        return ""
 
