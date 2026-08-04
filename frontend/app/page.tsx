@@ -58,6 +58,9 @@ export default function Home() {
   const [feedbackError, setFeedbackError] = useState<string | null>(null);
   const [commentingMsgId, setCommentingMsgId] = useState<string | null>(null);
   const [feedbackComment, setFeedbackComment] = useState("");
+  const [showAdminModal, setShowAdminModal] = useState(false);
+  const [adminStats, setAdminStats] = useState<any>(null);
+  const [adminLoading, setAdminLoading] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -316,6 +319,29 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              onClick={async () => {
+                setShowAdminModal(true);
+                setAdminLoading(true);
+                try {
+                  const res = await fetch(`${API_BASE_URL}/admin/stats`);
+                  if (res.ok) {
+                    const data = await res.json();
+                    setAdminStats(data);
+                  } else {
+                    setAdminStats({ error: `HTTP ${res.status}` });
+                  }
+                } catch (err: any) {
+                  setAdminStats({ error: err.message || "Failed to fetch admin stats" });
+                } finally {
+                  setAdminLoading(false);
+                }
+              }}
+              className="px-3 py-1.5 rounded-lg bg-surface border border-accent/40 text-xs text-accent hover:bg-accent/10 transition-colors flex items-center gap-1.5 font-medium"
+            >
+              📊 Admin Stats
+            </button>
+
             {sessionId && (
               <button
                 onClick={clearSession}
@@ -830,6 +856,95 @@ export default function Home() {
           </p>
         </div>
       </footer>
+
+      {/* ── Admin Diagnostics Modal Overlay ───────────────────────── */}
+      {showAdminModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-surface border border-border rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-border/60 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">📊</span>
+                <h3 className="font-bold text-base text-foreground">
+                  System Diagnostics & Stats
+                </h3>
+              </div>
+              <button
+                onClick={() => setShowAdminModal(false)}
+                className="text-muted hover:text-foreground text-sm font-bold px-2 py-1 rounded-lg hover:bg-surface-hover"
+              >
+                ✕
+              </button>
+            </div>
+
+            {adminLoading ? (
+              <div className="py-8 text-center text-sm text-muted animate-pulse">
+                Fetching system stats from backend...
+              </div>
+            ) : adminStats ? (
+              adminStats.error ? (
+                <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs">
+                  ⚠️ {adminStats.error}
+                </div>
+              ) : (
+                <div className="space-y-3 text-xs">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="p-3 rounded-xl bg-background border border-border/60">
+                      <span className="text-muted text-[10px] uppercase font-semibold">
+                        Total Vector Chunks
+                      </span>
+                      <p className="text-lg font-bold text-emerald-400 mt-1">
+                        {adminStats.total_chunks}
+                      </p>
+                    </div>
+                    <div className="p-3 rounded-xl bg-background border border-border/60">
+                      <span className="text-muted text-[10px] uppercase font-semibold">
+                        BM25 Indexed Chunks
+                      </span>
+                      <p className="text-lg font-bold text-accent mt-1">
+                        {adminStats.bm25_indexed_chunks}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-background border border-border/60 space-y-1.5">
+                    <div className="flex justify-between">
+                      <span className="text-muted">LLM Provider:</span>
+                      <span className="font-medium text-foreground uppercase">{adminStats.llm_provider}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted">Embedding Model:</span>
+                      <span className="font-medium text-foreground truncate max-w-[200px]">
+                        {adminStats.embedding_model}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted">ChromaDB Path:</span>
+                      <span className="font-mono text-muted/80 text-[10px]">
+                        {adminStats.chroma_db_path}
+                      </span>
+                    </div>
+                    <div className="flex justify-between pt-1 border-t border-border/40">
+                      <span className="text-muted">System Status:</span>
+                      <span className="font-bold text-emerald-400 uppercase">
+                        ● {adminStats.status}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )
+            ) : null}
+
+            <div className="pt-2 text-right">
+              <button
+                onClick={() => setShowAdminModal(false)}
+                className="px-4 py-2 rounded-xl bg-primary text-white text-xs font-medium hover:opacity-90 transition-opacity"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
