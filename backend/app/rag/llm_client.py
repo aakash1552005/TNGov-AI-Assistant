@@ -256,10 +256,27 @@ class GroqClient:
             {"role": "user", "content": user_content},
         ]
 
-        fallback_models = [settings.groq_model, "llama3-8b-8192", "mixtral-8x7b-32768", "gemma2-9b-it"]
+        # Ordered fallback list — verified active as of 2026-08 via GET /openai/v1/models.
+        # Primary model is first; smaller/cheaper models follow for rate-limit recovery.
+        fallback_models = [
+            settings.groq_model,              # llama-3.3-70b-versatile (primary)
+            "llama-3.1-8b-instant",           # fast low-latency fallback
+            "openai/gpt-oss-20b",             # OpenAI-weight compact model
+            "qwen/qwen3.6-27b",               # Alibaba multilingual
+            "openai/gpt-oss-120b",            # largest available
+            "allam-2-7b",                     # smallest — last resort
+        ]
+        # De-duplicate in case settings.groq_model matches a hardcoded entry
+        seen: set[str] = set()
+        unique_fallbacks = []
+        for m in fallback_models:
+            if m not in seen:
+                seen.add(m)
+                unique_fallbacks.append(m)
+
         last_exception = None
 
-        for model_name in fallback_models:
+        for model_name in unique_fallbacks:
             try:
                 logger.info(
                     "Calling Groq (model=%s, context_chunks=%d, temperature=%s)",
@@ -283,8 +300,17 @@ class GroqClient:
                 )
                 return answer
             except Exception as exc:
-                logger.warning("Groq model '%s' failed: %s. Trying next fallback model...", model_name, exc)
+                err_str = str(exc)
+                logger.warning(
+                    "Groq model '%s' failed: %s. Trying next fallback model...",
+                    model_name,
+                    exc,
+                )
                 last_exception = exc
+                # For decommissioned models there is no point waiting; continue immediately.
+                # For rate limits the next model in the list should work.
+                # Both cases: just continue to next model.
+                continue
 
         if last_exception:
             raise last_exception
