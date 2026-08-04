@@ -57,7 +57,7 @@ def cmd_ingest(args: argparse.Namespace) -> None:
     print("-" * 60)
 
     for r in result.results:
-        status_icon = {"ingested": "✓", "skipped": "⊘", "error": "✗"}.get(r.status, "?")
+        status_icon = {"ingested": "[OK]", "skipped": "[SKIP]", "error": "[FAIL]"}.get(r.status, "[?]")
         line = f"  {status_icon} {r.file_name} — {r.status}"
         if r.status == "ingested":
             line += f" ({r.pages_extracted} pages, {r.chunks_created} chunks)"

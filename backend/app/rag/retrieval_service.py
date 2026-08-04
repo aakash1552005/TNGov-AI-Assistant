@@ -14,6 +14,7 @@ import logging
 
 from app.core.config import settings
 from app.rag import bm25_index, vector_store
+from app.rag.query_expander import expand_query
 from app.rag.retrieval_models import RetrievedChunk
 from ingestion.embedder import embed_query
 
@@ -21,34 +22,15 @@ logger = logging.getLogger(__name__)
 
 
 class RetrievalService:
-    """Hybrid retrieval: vector + BM25, fused via Reciprocal Rank Fusion.
-
-    Usage::
-
-        service = RetrievalService()
-        chunks = service.retrieve("old age pension eligibility")
-    """
+    """Hybrid retrieval: vector + BM25, fused via Reciprocal Rank Fusion."""
 
     def retrieve(self, query: str) -> list[RetrievedChunk]:
-        """Run hybrid retrieval for a query.
+        """Run hybrid retrieval for a query."""
+        # 0. Expand query with synonyms / colloquial terms
+        search_query = expand_query(query)
 
-        Steps:
-            1. Embed query via the E5 embedder
-            2. Vector search: ChromaDB top-k
-            3. BM25 search: keyword index top-k
-            4. RRF fusion: merge by chunk_id
-            5. Sort by fused score descending
-            6. Return top ``retrieval_final_context_k`` chunks
-
-        Args:
-            query: The user's question text.
-
-        Returns:
-            List of RetrievedChunk objects, sorted by RRF score
-            descending, limited to ``retrieval_final_context_k``.
-        """
         # 1. Embed query
-        query_embedding = embed_query(query)
+        query_embedding = embed_query(search_query)
 
         # 2. Vector search
         vector_results = vector_store.query_similar(
@@ -58,7 +40,7 @@ class RetrievalService:
         vector_hits = self._parse_vector_results(vector_results)
 
         # 3. BM25 search
-        bm25_hits = bm25_index.search(query, top_k=settings.retrieval_bm25_top_k)
+        bm25_hits = bm25_index.search(search_query, top_k=settings.retrieval_bm25_top_k)
 
         # 4. RRF fusion
         fused = self._rrf_fusion(vector_hits, bm25_hits)

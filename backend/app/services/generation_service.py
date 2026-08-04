@@ -11,6 +11,7 @@ import time
 
 from app.core.config import settings
 from app.rag.llm_client import GeminiClient, GroqClient, LLMClient, OpenAIClient
+from app.rag.query_expander import suggest_did_you_mean
 from app.rag.retrieval_models import (
     Citation,
     GenerationResponse,
@@ -41,35 +42,47 @@ def _get_llm_client() -> LLMClient:
     else:
         raise RuntimeError(f"Unsupported LLM provider: {settings.llm_provider}")
 
-_NO_RELEVANT_INFO = (
-    "No relevant official information found. Please check with the "
-    "concerned department directly for accurate information.\n\n"
-    "⚠️ This is an AI assistant, not an official government source. "
-    "Please verify all information with the concerned department "
-    "before taking any action."
-)
+
+def _build_refusal_response(query: str, chunks: list[RetrievedChunk], vector_count: int, bm25_count: int) -> GenerationResponse:
+    """Build a helpful, diagnostic refusal message with fuzzy match suggestions."""
+    suggestions = suggest_did_you_mean(query)
+    
+    msg_lines = [
+        "I could not find official information for this query in the currently indexed Tamil Nadu Government dataset.",
+        "\nPossible reasons:",
+        "• The scheme is not yet indexed in our official repository",
+        "• The scheme name or spelling may differ from official government terminology",
+        "• It may belong to a department or agency not covered by this system",
+    ]
+
+    if suggestions:
+        msg_lines.append("\nDid you mean one of these official schemes?")
+        for s in suggestions:
+            msg_lines.append(f"• {s}")
+
+    msg_lines.append(
+        "\n⚠️ This is an AI assistant, not an official government source. "
+        "Please verify all information with the concerned department directly."
+    )
+
+    return GenerationResponse(
+        answer="\n".join(msg_lines),
+        citations=[],
+        retrieved_chunks=chunks,
+        retrieval_metadata=RetrievalMetadata(
+            total_retrieved=len(chunks),
+            top_rrf_score=chunks[0].rrf_score if chunks else None,
+            vector_results_count=vector_count,
+            bm25_results_count=bm25_count,
+            llm_called=False,
+            confidence_level="Low",
+        ),
+        suggestions=suggestions,
+    )
 
 
-def answer_question(query: str) -> GenerationResponse:
-    """Execute the full retrieval → generation pipeline.
-
-    Steps:
-        1. Validate query length
-        2. Retrieve chunks via hybrid search (vector + BM25 + RRF)
-        3. Check relevance threshold — if top RRF score < min_score,
-           skip the LLM call and return "no relevant info"
-        4. Build context strings from top-k chunks
-        5. Call LLM to generate a grounded answer
-        6. Build structured citations from chunk metadata
-        7. Return GenerationResponse
-
-    Args:
-        query: The user's question (English or Tamil).
-
-    Returns:
-        GenerationResponse with answer, citations, retrieved chunks,
-        and retrieval metadata.
-    """
+def answer_question(query: str, context_prefix: str | None = None) -> GenerationResponse:
+    """Execute the full retrieval → generation pipeline."""
     start = time.monotonic()
     clean_query = sanitize_query(query)
 
@@ -88,12 +101,14 @@ def answer_question(query: str) -> GenerationResponse:
                 vector_results_count=0,
                 bm25_results_count=0,
                 llm_called=False,
+                confidence_level="Low",
             ),
         )
 
     # 2. Retrieve chunks
+    effective_query = f"{context_prefix} {clean_query}".strip() if context_prefix else clean_query
     try:
-        chunks = _retrieval_service.retrieve(clean_query)
+        chunks = _retrieval_service.retrieve(effective_query)
     except Exception:
         logger.exception("Retrieval failed for query: %s", clean_query[:80])
         return GenerationResponse(
@@ -106,6 +121,7 @@ def answer_question(query: str) -> GenerationResponse:
                 vector_results_count=0,
                 bm25_results_count=0,
                 llm_called=False,
+                confidence_level="Low",
             ),
         )
 
@@ -140,18 +156,22 @@ def answer_question(query: str) -> GenerationResponse:
             f"{top_chunk.vector_score:.4f}" if top_chunk and top_chunk.vector_score is not None else "None",
             f"{top_chunk.bm25_score:.4f}" if top_chunk and top_chunk.bm25_score is not None else "None",
         )
-        return GenerationResponse(
-            answer=_NO_RELEVANT_INFO,
-            citations=[],
-            retrieved_chunks=chunks,
-            retrieval_metadata=RetrievalMetadata(
-                total_retrieved=len(chunks),
-                top_rrf_score=top_rrf,
-                vector_results_count=vector_count,
-                bm25_results_count=bm25_count,
-                llm_called=False,
-            ),
-        )
+        return _build_refusal_response(clean_query, chunks, vector_count, bm25_count)
+
+    # Determine confidence level
+    confidence_level = "Medium"
+    if top_chunk and top_chunk.vector_score is not None and top_chunk.vector_score <= 0.35:
+        confidence_level = "High"
+    elif top_rrf and top_rrf >= 0.030:
+        confidence_level = "High"
+
+    # Extract related schemes from retrieved chunks
+    related_schemes: list[str] = []
+    main_scheme = top_chunk.metadata.get("scheme_name", "") if top_chunk else ""
+    for c in chunks:
+        scheme = str(c.metadata.get("scheme_name", "")).strip()
+        if scheme and scheme != main_scheme and scheme not in related_schemes:
+            related_schemes.append(scheme)
 
     # 4. Build context strings — only chunk_text goes into the prompt
     context_strings = []
@@ -192,7 +212,10 @@ def answer_question(query: str) -> GenerationResponse:
             vector_results_count=vector_count,
             bm25_results_count=bm25_count,
             llm_called=llm_called,
+            confidence_level=confidence_level,
         ),
+        related_schemes=related_schemes,
+        suggestions=[],
     )
 
 

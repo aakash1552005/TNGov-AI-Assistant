@@ -246,5 +246,53 @@
     "source_url": "https://msmeonline.tn.gov.in/uyegp/uyegp_desc.php",
     "language": "en",
     "last_updated": "2026-07-28"
+  },
+  {
+    "file_name": "kalaignar_magalir_urimai_thogai.pdf",
+    "scheme_name": "Kalaignar Magalir Urimai Thogai Scheme",
+    "department": "Social Welfare & Revenue",
+    "source_url": "https://kmut.tn.gov.in",
+    "language": "en",
+    "last_updated": "2026-08-04"
+  },
+  {
+    "file_name": "pudhumai_penn_scheme.pdf",
+    "scheme_name": "Moovalur Ramamirtham Ammiyar Higher Education Assurance Scheme (Pudhumai Penn)",
+    "department": "Social Welfare and Women Empowerment",
+    "source_url": "https://penkalvi.tn.gov.in",
+    "language": "en",
+    "last_updated": "2026-08-04"
+  },
+  {
+    "file_name": "chief_ministers_breakfast_scheme.pdf",
+    "scheme_name": "Chief Minister's Breakfast Scheme",
+    "department": "Social Welfare and Nutritious Meal Programme",
+    "source_url": "https://tn.gov.in",
+    "language": "en",
+    "last_updated": "2026-08-04"
+  },
+  {
+    "file_name": "old_age_pension_scheme.pdf",
+    "scheme_name": "Tamil Nadu Social Security Pension Schemes (Old Age Pension / Destitute Widow Pension)",
+    "department": "Revenue and Disaster Management",
+    "source_url": "https://tn.gov.in",
+    "language": "en",
+    "last_updated": "2026-08-04"
+  },
+  {
+    "file_name": "makkalai_thedi_maruthuvam.pdf",
+    "scheme_name": "Makkalai Thedi Maruthuvam Doorstep Healthcare Scheme",
+    "department": "Health and Family Welfare",
+    "source_url": "https://tnhealth.tn.gov.in",
+    "language": "en",
+    "last_updated": "2026-08-04"
+  },
+  {
+    "file_name": "women_free_bus_travel.pdf",
+    "scheme_name": "Free Bus Travel for Women (Vidiyal Payanam Scheme)",
+    "department": "Transport Department",
+    "source_url": "https://tnstc.in",
+    "language": "en",
+    "last_updated": "2026-08-04"
   }
 ]

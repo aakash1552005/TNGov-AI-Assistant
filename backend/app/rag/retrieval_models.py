@@ -7,7 +7,7 @@ a shared module ensures they can be reused unchanged across layers.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -71,6 +71,7 @@ class RetrievalMetadata:
         bm25_results_count: Number of results from BM25 search.
         llm_called: Whether the LLM was invoked (False if relevance
             threshold was not met).
+        confidence_level: Rated confidence ("High", "Medium", "Low").
     """
 
     total_retrieved: int
@@ -78,23 +79,16 @@ class RetrievalMetadata:
     vector_results_count: int
     bm25_results_count: int
     llm_called: bool
+    confidence_level: str = "Low"
 
 
 @dataclass
 class GenerationResponse:
-    """Complete response from the generation pipeline.
-
-    Returned by ``answer_question()`` and consumed directly by
-    the FastAPI API layer in Milestone 4.
-
-    Attributes:
-        answer: The generated answer text.
-        citations: Structured source citations.
-        retrieved_chunks: All chunks that were retrieved (for logging/debugging).
-        retrieval_metadata: Diagnostic metadata about the retrieval.
-    """
+    """Complete response from the generation pipeline."""
 
     answer: str
     citations: list[Citation]
     retrieved_chunks: list[RetrievedChunk]
     retrieval_metadata: RetrievalMetadata | None = None
+    related_schemes: list[str] = field(default_factory=list)
+    suggestions: list[str] = field(default_factory=list)

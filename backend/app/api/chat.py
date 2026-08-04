@@ -44,6 +44,7 @@ class RetrievalMetadataSchema(BaseModel):
     vector_results_count: int
     bm25_results_count: int
     llm_called: bool
+    confidence_level: str = "Low"
 
 
 class ChatResponseSchema(BaseModel):
@@ -52,6 +53,8 @@ class ChatResponseSchema(BaseModel):
     answer: str
     citations: list[CitationSchema]
     retrieval_metadata: RetrievalMetadataSchema
+    related_schemes: list[str] = []
+    suggestions: list[str] = []
 
 
 class MessageItemSchema(BaseModel):
@@ -87,22 +90,30 @@ async def chat(
             detail=f"Question exceeds maximum query length of {settings.max_query_length} characters.",
         )
 
-    # 1. Handle or create Session ID
+    # 1. Handle or create Session ID & Conversation Memory Context
     active_session_id = request.session_id or uuid.uuid4()
+    context_prefix: str | None = None
 
-    # Try session retrieval / creation in DB
+    # Try session retrieval & conversation history for memory
     try:
         if request.session_id:
             session_obj = await persistence_service.get_session(db, request.session_id)
             if not session_obj:
-                # Session was not in DB yet (e.g. initial message save failed earlier)
-                # Try to create it with the requested session_id
                 try:
                     new_session = persistence_service.ChatSession(id=request.session_id)
                     db.add(new_session)
                     await db.commit()
                 except Exception:
                     await db.rollback()
+            else:
+                # Fetch recent messages to extract conversational context
+                past_messages = await persistence_service.get_conversation(db, request.session_id)
+                if past_messages:
+                    # Look at the last user message or assistant message to extract context
+                    for m in reversed(past_messages):
+                        if m.role == "user" and m.content != question:
+                            context_prefix = m.content[:100]
+                            break
         else:
             session_obj = await persistence_service.create_session(db)
             active_session_id = session_obj.id
@@ -117,8 +128,8 @@ async def chat(
         await db.rollback()
         logger.exception("Database error while saving user message — proceeding with generation")
 
-    # 3. Call core generation service
-    gen_response = generation_service.answer_question(question)
+    # 3. Call core generation service with optional conversation memory context
+    gen_response = generation_service.answer_question(question, context_prefix=context_prefix)
 
     # 4. Save assistant response message
     assistant_msg_id: uuid.UUID | None = None
@@ -149,6 +160,7 @@ async def chat(
         vector_results_count=gen_response.retrieval_metadata.vector_results_count,
         bm25_results_count=gen_response.retrieval_metadata.bm25_results_count,
         llm_called=gen_response.retrieval_metadata.llm_called,
+        confidence_level=getattr(gen_response.retrieval_metadata, "confidence_level", "Medium"),
     )
     return ChatResponseSchema(
         session_id=active_session_id,
@@ -156,6 +168,8 @@ async def chat(
         answer=gen_response.answer,
         citations=citations_data,
         retrieval_metadata=meta_data,
+        related_schemes=gen_response.related_schemes,
+        suggestions=gen_response.suggestions,
     )
 
 

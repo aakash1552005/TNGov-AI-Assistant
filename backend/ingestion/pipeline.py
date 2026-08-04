@@ -24,7 +24,7 @@ from pathlib import Path
 
 from app.core.config import settings
 from app.rag import vector_store
-from ingestion import cleaner, chunker, embedder, pdf_loader
+from ingestion import cleaner, chunker, embedder
 
 logger = logging.getLogger(__name__)
 
@@ -181,20 +181,24 @@ def run_pipeline(
 
     for entry in entries:
         pdf_path = raw_dir / entry.file_name
+        stem = Path(entry.file_name).stem
+        json_path = extracted_dir / f"{stem}.json"
 
-        if not pdf_path.exists():
-            logger.error("PDF not found: %s — skipping", pdf_path)
+        target_file = json_path if json_path.exists() else (pdf_path if pdf_path.exists() else None)
+
+        if not target_file:
+            logger.error("Neither PDF nor Extracted JSON found for: %s — skipping", entry.file_name)
             results.append(IngestResult(
                 file_name=entry.file_name,
                 pages_extracted=0,
                 chunks_created=0,
                 status="error",
-                error=f"File not found: {pdf_path}",
+                error=f"File not found: {pdf_path} or {json_path}",
             ))
             continue
 
         # Check if document has changed (SHA-256 incremental ingestion)
-        current_hash = _hash_file(pdf_path)
+        current_hash = _hash_file(target_file)
         if not force and hash_registry.get(entry.file_name) == current_hash:
             logger.info("'%s' unchanged (hash match) — skipping", entry.file_name)
             results.append(IngestResult(
@@ -207,7 +211,7 @@ def run_pipeline(
 
         # Process the document
         try:
-            result = _ingest_document(entry, pdf_path, current_hash, extracted_dir)
+            result = _ingest_document(entry, target_file, current_hash, extracted_dir)
             total_chunks += result.chunks_created
             results.append(result)
 
@@ -266,41 +270,41 @@ def run_pipeline(
 
 def _ingest_document(
     entry: DocumentEntry,
-    pdf_path: Path,
+    target_path: Path,
     document_hash: str,
     extracted_dir: Path,
 ) -> IngestResult:
-    """Ingest a single PDF document through the full pipeline.
-
-    Args:
-        entry: Source metadata for this document.
-        pdf_path: Path to the PDF file.
-        document_hash: SHA-256 hash of the PDF.
-        extracted_dir: Directory to save intermediate extracted text.
-
-    Returns:
-        IngestResult with extraction and chunking statistics.
-    """
+    """Ingest a single document (PDF or Extracted JSON) through the full pipeline."""
     logger.info("Ingesting '%s' (%s / %s)", entry.file_name, entry.department, entry.scheme_name)
 
-    # 1. Extract text from PDF
-    pages = pdf_loader.load_pdf(pdf_path)
-    if not pages:
-        logger.warning("No text extracted from '%s'", entry.file_name)
-        return IngestResult(
-            file_name=entry.file_name,
-            pages_extracted=0,
-            chunks_created=0,
-            status="ingested",
-        )
+    page_texts: list[str] = []
+    page_numbers: list[int] = []
 
-    # 1b. Persist raw extracted text as intermediate artifact
-    _save_extracted_text(pages, entry.file_name, extracted_dir)
+    if target_path.suffix.lower() == ".pdf" and target_path.exists():
+        from ingestion import pdf_loader
+        pages = pdf_loader.load_pdf(target_path)
+        if not pages:
+            logger.warning("No text extracted from '%s'", entry.file_name)
+            return IngestResult(
+                file_name=entry.file_name,
+                pages_extracted=0,
+                chunks_created=0,
+                status="ingested",
+            )
+        _save_extracted_text(pages, entry.file_name, extracted_dir)
+        page_texts = [p.text for p in pages]
+        page_numbers = [p.page_number for p in pages]
+    elif target_path.suffix.lower() == ".json" and target_path.exists():
+        with open(target_path, encoding="utf-8") as f:
+            data = json.load(f)
+        for page in data.get("pages", []):
+            page_texts.append(page.get("text", ""))
+            page_numbers.append(page.get("page_number", 1))
+    else:
+        raise FileNotFoundError(f"Unsupported or missing target file: {target_path}")
 
     # 2. Clean text (with cross-page header/footer detection)
-    page_texts = [p.text for p in pages]
     cleaned_texts = cleaner.clean_pages(page_texts)
-    page_numbers = [p.page_number for p in pages]
 
     # 3. Chunk with metadata
     chunks = chunker.chunk_pages(
@@ -319,7 +323,7 @@ def _ingest_document(
         logger.warning("No chunks created from '%s'", entry.file_name)
         return IngestResult(
             file_name=entry.file_name,
-            pages_extracted=len(pages),
+            pages_extracted=len(page_texts),
             chunks_created=0,
             status="ingested",
         )
@@ -333,12 +337,12 @@ def _ingest_document(
 
     logger.info(
         "Ingested '%s': %d pages → %d chunks → stored in ChromaDB",
-        entry.file_name, len(pages), len(chunks),
+        entry.file_name, len(page_texts), len(chunks),
     )
 
     return IngestResult(
         file_name=entry.file_name,
-        pages_extracted=len(pages),
+        pages_extracted=len(page_texts),
         chunks_created=len(chunks),
         status="ingested",
     )

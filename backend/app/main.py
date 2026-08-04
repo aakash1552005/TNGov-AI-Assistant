@@ -14,7 +14,7 @@ from typing import Any
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import chat, feedback
+from app.api import admin, chat, feedback
 from app.core.config import settings
 from app.db.base import Base
 from app.db.session import engine
@@ -82,6 +82,7 @@ app.add_middleware(
 # ── Routers ──────────────────────────────────────────────────
 app.include_router(chat.router)
 app.include_router(feedback.router)
+app.include_router(admin.router)
 
 
 # ── Routes ───────────────────────────────────────────────────

@@ -17,6 +17,7 @@ interface RetrievalMetadata {
   vector_results_count: number;
   bm25_results_count: number;
   llm_called: boolean;
+  confidence_level?: string;
 }
 
 interface ChatResponse {
@@ -25,6 +26,8 @@ interface ChatResponse {
   answer: string;
   citations: Citation[];
   retrieval_metadata: RetrievalMetadata;
+  related_schemes?: string[];
+  suggestions?: string[];
 }
 
 interface Message {
@@ -33,6 +36,8 @@ interface Message {
   content: string;
   citations?: Citation[];
   metadata?: RetrievalMetadata;
+  related_schemes?: string[];
+  suggestions?: string[];
   timestamp: string;
   messageId?: string;
   feedbackRating?: "up" | "down" | null;
@@ -205,6 +210,8 @@ export default function Home() {
         content: data.answer,
         citations: data.citations,
         metadata: data.retrieval_metadata,
+        related_schemes: data.related_schemes,
+        suggestions: data.suggestions,
         messageId: data.message_id,
         timestamp: new Date().toLocaleTimeString([], {
           hour: "2-digit",
@@ -440,23 +447,89 @@ export default function Home() {
               >
                 <div className="whitespace-pre-wrap">{msg.content}</div>
 
-                {/* Metadata Badge for Assistant responses */}
+                {/* Metadata & Confidence Badge for Assistant responses */}
                 {msg.role === "assistant" && msg.metadata && (
                   <div className="mt-3 pt-2.5 border-t border-border/50 flex flex-wrap items-center gap-3 text-[11px] text-muted">
+                    {/* Confidence Badge */}
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-surface border border-border font-medium">
+                      {msg.metadata.confidence_level === "High" ? (
+                        <>
+                          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                          <span className="text-emerald-400">High Confidence</span>
+                        </>
+                      ) : msg.metadata.confidence_level === "Medium" ? (
+                        <>
+                          <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                          <span className="text-amber-400">Medium Confidence</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                          <span className="text-red-400">Low Confidence</span>
+                        </>
+                      )}
+                    </span>
+
                     <span className="inline-flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
                       Retrieved: {msg.metadata.total_retrieved} chunks
                     </span>
+
                     {msg.metadata.top_rrf_score && (
                       <span>
                         Top RRF: {msg.metadata.top_rrf_score.toFixed(4)}
                       </span>
                     )}
+
                     <span>
                       {msg.metadata.llm_called
-                        ? "LLM Generated"
-                        : "Direct Response"}
+                        ? "LLM Grounded"
+                        : "Direct Guardrail Response"}
                     </span>
+                  </div>
+                )}
+
+                {/* Related Schemes Recommendations */}
+                {msg.role === "assistant" && msg.related_schemes && msg.related_schemes.length > 0 && (
+                  <div className="mt-3 pt-2 border-t border-border/40 space-y-1.5">
+                    <span className="text-[11px] font-semibold text-accent uppercase tracking-wider">
+                      💡 Related Schemes You May Be Interested In:
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {msg.related_schemes.map((scheme, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => {
+                            setInput(`Tell me about ${scheme}`);
+                          }}
+                          className="px-2.5 py-1 rounded-lg bg-surface hover:bg-surface-hover border border-border/60 text-xs text-muted hover:text-foreground transition-colors"
+                        >
+                          + {scheme}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Did You Mean Suggestions for Refusals */}
+                {msg.role === "assistant" && msg.suggestions && msg.suggestions.length > 0 && (
+                  <div className="mt-3 pt-2 border-t border-border/40 space-y-1.5">
+                    <span className="text-[11px] font-semibold text-amber-400 uppercase tracking-wider">
+                      🔍 Did you mean one of these schemes?
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {msg.suggestions.map((sug, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => {
+                            setInput(`What is ${sug}?`);
+                          }}
+                          className="px-2.5 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-xs text-amber-300 transition-colors"
+                        >
+                          👉 {sug}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
