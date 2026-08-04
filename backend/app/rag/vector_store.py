@@ -29,6 +29,15 @@ _META_PIPELINE_VERSION = "pipeline_version"
 _client: chromadb.ClientAPI | None = None
 
 
+def get_chunk_count() -> int:
+    """Return the total number of chunks in the collection."""
+    try:
+        col = get_collection()
+        return col.count()
+    except Exception:
+        return 0
+
+
 def _get_client() -> chromadb.ClientAPI:
     """Get or create the persistent ChromaDB client."""
     global _client
