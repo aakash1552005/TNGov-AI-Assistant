@@ -43,6 +43,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
 # Copy standalone output (next.config.ts output: 'standalone')
 COPY --from=builder /app/.next/standalone ./
