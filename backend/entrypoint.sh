@@ -107,6 +107,10 @@ if [ "${SEED_NEEDED}" = "1" ] && [ -d "/app/seed_data/chroma_db" ]; then
     rm -rf "${CHROMA_DB_PATH}"
     mkdir -p "${CHROMA_DB_PATH}"
     cp -rf /app/seed_data/chroma_db/* "${CHROMA_DB_PATH}/"
+    if [ -f "/app/seed_data/bm25_index.json" ]; then
+        cp -f /app/seed_data/bm25_index.json /data/bm25_index.json 2>/dev/null || true
+        cp -f /app/seed_data/bm25_index.json ./bm25_index.json 2>/dev/null || true
+    fi
     echo "[SEED] Seeding complete."
 fi
 
@@ -150,7 +154,7 @@ import sqlite3
 
 chroma_path = os.environ.get("CHROMA_DB_PATH", "/data/chroma_db")
 collection_name = os.environ.get("CHROMA_COLLECTION_NAME", "tn_gov_schemes")
-expected_chunks = 31
+expected_chunks = 37
 
 db_file = os.path.join(chroma_path, "chroma.sqlite3")
 if not os.path.exists(db_file):

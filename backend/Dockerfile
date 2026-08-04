@@ -39,7 +39,7 @@ COPY backend/app /app/app
 COPY backend/ingestion /app/ingestion
 COPY backend/evaluation /app/evaluation
 COPY backend/scripts /app/scripts
-COPY backend/seed_data/chroma_db /app/seed_data/chroma_db
+COPY backend/seed_data /app/seed_data
 COPY data /app/data
 COPY backend/tests /app/tests
 COPY backend/pyproject.toml /app/pyproject.toml
