@@ -13,10 +13,22 @@ from __future__ import annotations
 import logging
 from typing import Protocol
 
-import groq
-import openai
-from google import genai
-from google.genai import types
+try:
+    import groq
+except ImportError:
+    groq = None  # type: ignore[assignment]
+
+try:
+    import openai
+except ImportError:
+    openai = None  # type: ignore[assignment]
+
+try:
+    from google import genai
+    from google.genai import types
+except ImportError:
+    genai = None  # type: ignore[assignment]
+    types = None  # type: ignore[assignment]
 
 from app.core.config import settings
 from app.prompts.system_prompt import SYSTEM_PROMPT
