@@ -1,10 +1,10 @@
 {
-  "timestamp": "2026-08-04 14:19:47",
+  "timestamp": "2026-08-04 15:10:40",
   "total_queries": 8,
-  "passed_evals": 7,
-  "pass_rate": 87.5,
+  "passed_evals": 8,
+  "pass_rate": 100.0,
   "mean_mrr": 0.875,
   "precision_at_5": 0.875,
   "recall_at_5": 0.875,
-  "average_latency_seconds": 19.0
+  "average_latency_seconds": 15.02
 }
