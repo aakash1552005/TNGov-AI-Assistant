@@ -251,7 +251,6 @@ class TestOutOfScope:
 
     def test_irrelevant_query(self, retrieval_service, test_collection):
         """Query unrelated to TN government schemes."""
-        from app.services.generation_service import _NO_RELEVANT_INFO
 
         # Mock the LLM so we don't make real API calls
         with patch("app.services.generation_service._llm_client") as mock_llm:
@@ -264,6 +263,6 @@ class TestOutOfScope:
             # Either no chunks retrieved, or below threshold
             if response.retrieval_metadata.top_rrf_score is not None:
                 # If chunks were retrieved, the answer should still be
-                # the no-relevant-info message if below threshold
+                # the refusal message if below threshold
                 if not response.retrieval_metadata.llm_called:
-                    assert _NO_RELEVANT_INFO in response.answer
+                    assert "This assistant only answers officially indexed" in response.answer

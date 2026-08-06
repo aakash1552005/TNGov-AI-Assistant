@@ -19,7 +19,6 @@ def _make_retrieved_chunk(
 ) -> RetrievedChunk:
     return RetrievedChunk(
         chunk_id="test-id",
-        doc_id="test-doc",
         chunk_text="Sample text for testing TN Gov scheme.",
         metadata={"scheme_name": scheme_name, "department": department},
         vector_score=vector_score,
@@ -34,7 +33,7 @@ class TestConfidenceCalculation:
 
     def test_high_confidence_vector_threshold(self, monkeypatch):
         """Vector score <= 0.35 yields High confidence."""
-        mock_chunks = [_make_retrieved_chunk("KMUT", vector_score=0.20, rrf_score=0.020)]
+        mock_chunks = [_make_retrieved_chunk("Kalaignar Magalir Urimai Thogai Scheme", vector_score=0.20, rrf_score=0.035)]
         monkeypatch.setattr("app.services.generation_service._retrieval_service.retrieve", lambda q: mock_chunks)
         monkeypatch.setattr("app.services.generation_service._get_llm_client", lambda: MagicMock(generate=lambda q, c: "Answer"))
 
@@ -43,7 +42,7 @@ class TestConfidenceCalculation:
 
     def test_high_confidence_rrf_threshold(self, monkeypatch):
         """Top RRF score >= 0.030 yields High confidence."""
-        mock_chunks = [_make_retrieved_chunk("KMUT", vector_score=0.40, rrf_score=0.032)]
+        mock_chunks = [_make_retrieved_chunk("Kalaignar Magalir Urimai Thogai Scheme", vector_score=0.40, rrf_score=0.032)]
         monkeypatch.setattr("app.services.generation_service._retrieval_service.retrieve", lambda q: mock_chunks)
         monkeypatch.setattr("app.services.generation_service._get_llm_client", lambda: MagicMock(generate=lambda q, c: "Answer"))
 
@@ -52,7 +51,7 @@ class TestConfidenceCalculation:
 
     def test_medium_confidence(self, monkeypatch):
         """Vector score > 0.35 and RRF < 0.030 yields Medium confidence when above min score."""
-        mock_chunks = [_make_retrieved_chunk("KMUT", vector_score=0.38, bm25_score=6.0, rrf_score=0.025)]
+        mock_chunks = [_make_retrieved_chunk("Kalaignar Magalir Urimai Thogai Scheme", vector_score=0.38, bm25_score=6.0, rrf_score=0.028)]
         monkeypatch.setattr("app.services.generation_service._retrieval_service.retrieve", lambda q: mock_chunks)
         monkeypatch.setattr("app.services.generation_service._get_llm_client", lambda: MagicMock(generate=lambda q, c: "Answer"))
 

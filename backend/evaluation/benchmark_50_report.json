@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-08-06 12:25:56",
+  "total_queries": 50,
+  "passed_evals": 50,
+  "pass_rate": 100.0,
+  "mean_mrr": 0.76,
+  "precision_at_5": 0.8,
+  "recall_at_5": 0.8,
+  "average_latency_seconds": 11.34,
+  "category_breakdown": {
+    "Flagship": {
+      "total": 10,
+      "passed": 10
+    },
+    "Colloquial": {
+      "total": 10,
+      "passed": 10
+    },
+    "Tamil": {
+      "total": 10,
+      "passed": 10
+    },
+    "Specialized": {
+      "total": 10,
+      "passed": 10
+    },
+    "Refusal": {
+      "total": 10,
+      "passed": 10
+    }
+  }
+}

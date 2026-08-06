@@ -56,7 +56,8 @@ An enterprise-grade, production-ready Retrieval-Augmented Generation (RAG) assis
  ▼                                        ▼
 ┌───────────────────────────────────┐  ┌────────────────────────────────┐
 │ Retrieval Service (Hybrid RRF)    │  │ LLM Client Abstraction         │
-│ (app/rag/retrieval_service.py)    │  │ Groq / OpenAI / Gemini         │
+│ (app/rag/retrieval_service.py)    │  │ Groq LLM Client                │
+│                                   │  │ (llama-3.3-70b-versatile)       │
 └──────────┬────────────────────────┘  └────────────────────────────────┘
            │
  ┌─────────┴──────────────────────────────┐
@@ -95,7 +96,7 @@ GitHub (main branch)
 - **Hybrid RAG Engine**: Combines dense vector similarity (`intfloat/multilingual-e5-large` in ChromaDB) and sparse keyword matching (BM25) fused via Reciprocal Rank Fusion ($RRF(d) = \sum \frac{1}{60 + r(d)}$).
 - **100% Grounded & Cited Answers**: Answers cite official source PDF documents in `[PDF Name, Page X]` format.
 - **Out-of-Scope Refusal Guardrails**: Automatic refusal (`llm_called = False`) when no retrieved context meets `retrieval_min_score`.
-- **Multi-Provider LLM Abstraction**: Dynamic provider switching between Groq (`llama-3.3-70b-versatile`), OpenAI (`gpt-4o-mini`), and Gemini (`gemini-2.0-flash`).
+- **Groq LLM Engine**: Ultra-fast inference with `llama-3.3-70b-versatile` and automatic model fallbacks for 100% availability.
 - **Multilingual Query Support**: Seamless retrieval and generation across English and Tamil queries.
 - **Production Validation Gate**: `entrypoint.sh` performs 3-check fail-fast validation of ChromaDB before starting the server — prevents silent data loss on misconfigured deployments.
 - **Evaluation & Quality Suite**: Full benchmarking pipeline measuring Hit@K, MRR, latency percentiles, and RAGAS quality metrics.
@@ -111,7 +112,7 @@ git clone https://github.com/aakash1552005/TNGov-AI-Assistant.git
 cd TNGov-AI-Assistant
 
 cp backend/.env.example backend/.env
-# Edit backend/.env — set GROQ_API_KEY (or OPENAI_API_KEY / GEMINI_API_KEY)
+# Edit backend/.env — set GROQ_API_KEY
 ```
 
 ### 2. Local Docker (Recommended)

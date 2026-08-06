@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     """Central application settings.
 
     All fields map to environment variables. Defaults are provided
-    where sensible; secrets (e.g. OPENAI_API_KEY) must be set
+    where sensible; secrets (e.g. GROQ_API_KEY) must be set
     explicitly in the environment or .env file.
     """
 
@@ -39,11 +39,7 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+asyncpg://postgres:postgres@postgres:5432/tngov"
 
     # ── LLM Settings ─────────────────────────────────────────
-    llm_provider: str = "openai"
-    openai_api_key: str = ""
-    model_name: str = "gpt-4.1"
-    gemini_api_key: str = ""
-    gemini_model: str = "gemini-2.0-flash"
+    llm_provider: str = "groq"
     groq_api_key: str = ""
     groq_model: str = "llama-3.3-70b-versatile"
     llm_temperature: float = 0.0

@@ -66,8 +66,7 @@ Internet
 - Vercel CLI: `npm install -g vercel`
 
 ### API Keys Required
-- `GROQ_API_KEY` (recommended) — [console.groq.com](https://console.groq.com)
-- OR `OPENAI_API_KEY` / `GEMINI_API_KEY` (alternatives)
+- `GROQ_API_KEY` (required for LLM generation)
 
 ---
 

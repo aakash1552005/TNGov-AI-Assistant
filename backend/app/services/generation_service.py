@@ -16,7 +16,7 @@ import logging
 import time
 
 from app.core.config import settings
-from app.rag.llm_client import GeminiClient, GroqClient, LLMClient, OpenAIClient
+from app.rag.llm_client import GroqClient, LLMClient
 from app.rag.query_expander import suggest_did_you_mean
 from app.rag.retrieval_models import (
     Citation,
@@ -36,18 +36,11 @@ _llm_client: LLMClient | None = None
 
 
 def _get_llm_client() -> LLMClient:
-    """Select LLMClient implementation based on settings.llm_provider."""
-    if _llm_client is not None:
-        return _llm_client
-
-    if settings.llm_provider == "gemini":
-        return GeminiClient()
-    elif settings.llm_provider == "openai":
-        return OpenAIClient()
-    elif settings.llm_provider == "groq":
-        return GroqClient()
-    else:
-        raise RuntimeError(f"Unsupported LLM provider: {settings.llm_provider}")
+    """Get the Groq LLM client instance."""
+    global _llm_client
+    if _llm_client is None:
+        _llm_client = GroqClient()
+    return _llm_client
 
 
 def _build_refusal_response(

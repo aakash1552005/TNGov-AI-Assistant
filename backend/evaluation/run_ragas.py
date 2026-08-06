@@ -94,24 +94,11 @@ def run_ragas_eval(dataset_path: str = "evaluation/eval_dataset.json") -> dict[s
     }
     dataset = Dataset.from_dict(eval_dict)
 
-    # Configure LLM & Embeddings for RAGAS evaluator based on settings.llm_provider
-    provider = (settings.llm_provider or "openai").lower()
-    
-    if provider == "groq":
-        api_key = settings.groq_api_key or os.getenv("GROQ_API_KEY")
-        model_name = settings.groq_model
-        base_url = "https://api.groq.com/openai/v1"
-        key_name = "GROQ_API_KEY"
-    elif provider == "gemini":
-        api_key = settings.gemini_api_key or os.getenv("GEMINI_API_KEY")
-        model_name = settings.gemini_model
-        base_url = None
-        key_name = "GEMINI_API_KEY"
-    else:
-        api_key = settings.openai_api_key or os.getenv("OPENAI_API_KEY")
-        model_name = settings.model_name
-        base_url = None
-        key_name = "OPENAI_API_KEY"
+    # Configure LLM & Embeddings for RAGAS evaluator using Groq API
+    api_key = settings.groq_api_key or os.getenv("GROQ_API_KEY")
+    model_name = settings.groq_model
+    base_url = "https://api.groq.com/openai/v1"
+    key_name = "GROQ_API_KEY"
 
     if not api_key:
         print(f"WARNING: {key_name} is not set for configured provider '{provider}'. Returning PARTIAL RESULTS without LLM-based RAGAS calculation.")

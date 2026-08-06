@@ -62,7 +62,7 @@ Based on the **Tamil Nadu Government AI Scheme Assistant** codebase and system a
 - **Answer**: Pydantic handles request/response data validation, settings management (`pydantic-settings`), and strict schema serialization.
 
 #### 12. How does `LLMClient` protocol work?
-- **Answer**: Python `typing.Protocol` defines the structural subtyping interface `generate(prompt: str, context: list[str]) -> str`. `GroqClient`, `GeminiClient`, and `OpenAIClient` implement this protocol.
+- **Answer**: Python `typing.Protocol` defines the structural subtyping interface `generate(prompt: str, context: list[str]) -> str`. `GroqClient` implements this protocol with multi-model fallback resiliency.
 
 #### 13. How does FastAPI lifespan manage model pre-warming?
 - **Answer**: The `@asynccontextmanager` lifespan function initializes `vector_store.get_collection()` and `bm25_index._ensure_loaded()` on application startup, eliminating first-request latency spikes.

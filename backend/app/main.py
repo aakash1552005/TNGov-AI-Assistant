@@ -119,12 +119,7 @@ async def health_check() -> dict[str, Any]:
         logger.exception("Health check error while verifying BM25 index status")
         bm25_ok = False
 
-    if settings.llm_provider == "groq":
-        active_model = settings.groq_model
-    elif settings.llm_provider == "gemini":
-        active_model = settings.gemini_model
-    else:
-        active_model = settings.model_name
+    active_model = settings.groq_model
 
     return {
         "status": "healthy",

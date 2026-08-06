@@ -58,7 +58,7 @@ This separates deployment (container start) from data initialization, making eac
 | Multilingual support (English + Tamil) | ✅ Verified |
 | Citation generation (PDF + page number) | ✅ Verified |
 | Out-of-scope refusal guardrails | ✅ Verified |
-| Multi-provider LLM (Groq / OpenAI / Gemini) | ✅ Verified |
+| Groq LLM Engine (llama-3.3-70b-versatile) | ✅ Verified |
 | PostgreSQL conversation persistence | ✅ Verified |
 | Feedback submission and storage | ✅ Verified |
 | Conversation history retrieval | ✅ Verified |

@@ -38,7 +38,7 @@ TNGov-AI-Assistant/
 │   │   │   └── system_prompt.py      # Grounded RAG system prompt
 │   │   ├── rag/                      # Core RAG Retrieval & LLM Layer
 │   │   │   ├── bm25_index.py         # BM25 sparse keyword index
-│   │   │   ├── llm_client.py         # GroqClient, GeminiClient, OpenAIClient
+│   │   │   ├── llm_client.py         # GroqClient with automatic model fallback
 │   │   │   ├── retrieval_models.py   # Dataclass models (Citation, Chunk, Metadata)
 │   │   │   ├── retrieval_service.py  # Hybrid search & RRF ranking
 │   │   │   └── vector_store.py       # ChromaDB vector store wrapper

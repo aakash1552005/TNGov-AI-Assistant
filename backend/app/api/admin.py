@@ -107,11 +107,7 @@ def _get_git_commit() -> str:
 
 
 def _get_llm_model() -> str:
-    if settings.llm_provider == "groq":
-        return settings.groq_model
-    elif settings.llm_provider == "gemini":
-        return settings.gemini_model
-    return settings.model_name
+    return settings.groq_model
 
 
 # ── Endpoints ─────────────────────────────────────────────────

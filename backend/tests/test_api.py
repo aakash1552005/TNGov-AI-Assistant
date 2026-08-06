@@ -74,7 +74,7 @@ def test_chat_out_of_scope_question() -> None:
 
     data = response.json()
     assert "answer" in data
-    assert "No relevant official information found" in data["answer"]
+    assert "This assistant only answers officially indexed" in data["answer"]
     assert data["retrieval_metadata"]["llm_called"] is False
 
 
