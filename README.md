@@ -10,13 +10,10 @@
 ![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white)
 ![ChromaDB](https://img.shields.io/badge/ChromaDB-Embedded-FF6B35)
 ![Groq](https://img.shields.io/badge/Groq-LLaMA_3.3_70B-F55036?logo=groq)
-![pytest](https://img.shields.io/badge/Tests-86%2F86_PASSED-brightgreen)
-![Benchmark](https://img.shields.io/badge/Benchmark-50%2F50_PASSED-brightgreen)
-![License](https://img.shields.io/badge/License-MIT-blue)
 
 **A production-deployed AI assistant that answers citizen queries about 37+ Tamil Nadu Government welfare schemes — in English and Tamil — using a fully grounded Hybrid RAG pipeline with zero hallucination tolerance.**
 
-[Live Demo](#-live-deployment) · [Architecture](#-system-architecture) · [Benchmarks](#-evaluation--benchmarks) · [Quick Start](#-quick-start) · [Deployment Guide](DEPLOYMENT.md)
+[🚀 Try Live Demo](https://frontend-production-ee49.up.railway.app) · [Architecture](#-system-architecture) · [Benchmarks](#-evaluation--benchmarks) · [Quick Start](#-quick-start) · [Deployment Guide](DEPLOYMENT.md)
 
 </div>
 
@@ -69,17 +66,17 @@ Social Security · Women Welfare · Education · Health Insurance · Agriculture
 
 ## 🚀 Live Deployment
 
-| Component | Provider | Status |
-|---|---|---|
-| **Backend REST API** | Railway (Docker) | ✅ Live |
-| **Frontend Application** | Vercel (Next.js) | ✅ Live |
-| **PostgreSQL** | Railway Plugin | ✅ Managed |
-| **Vector Store** | ChromaDB on Railway Volume | ✅ Persistent |
+| Component | Provider | Status | Live Link |
+|---|---|---|---|
+| **Frontend Application** | Railway (Next.js 16) | ✅ Live | [👉 Open Frontend App](https://frontend-production-ee49.up.railway.app) |
+| **Backend REST API** | Railway (FastAPI Docker) | ✅ Live | [👉 Open Backend API](https://backend-production-0a73.up.railway.app) |
+| **PostgreSQL** | Railway Plugin | ✅ Managed | Internal Connection |
+| **Vector Store** | ChromaDB on Railway Volume | ✅ Persistent | `/data/chroma_db` |
 
-**Backend:** `https://backend-production-0a73.up.railway.app`  
-**Frontend:** Vercel deployment (see [DEPLOYMENT.md](DEPLOYMENT.md))
+- **Frontend App:** [https://frontend-production-ee49.up.railway.app](https://frontend-production-ee49.up.railway.app)
+- **Backend API:** [https://backend-production-0a73.up.railway.app](https://backend-production-0a73.up.railway.app)
 
-> Production verification: 10/10 checks passed against live Railway endpoint (see [Section 5: Evaluation](#-evaluation--benchmarks))
+> Production verification: 10/10 checks passed against live Railway endpoints (see [Section 5: Evaluation](#-evaluation--benchmarks))
 
 ---
 
@@ -96,7 +93,7 @@ Social Security · Women Welfare · Education · Health Insurance · Agriculture
                                ▼
 ┌─────────────────────────────────────────────────────────────────────┐
 │                   Next.js 16 / React 19 Frontend                     │
-│                   Vercel — Global CDN Edge Network                   │
+│                   Railway Container Service                          │
 │                                                                      │
 │   ┌─────────────┐  ┌──────────────┐  ┌──────────────────────────┐  │
 │   │  Chat UI    │  │ Session Mgmt │  │  Confidence Badge        │  │
@@ -312,11 +309,6 @@ def should_refuse(query: str, chunks: list, top_rrf_score: float) -> bool:
     return False
 ```
 
-**Benchmark results (50-query audit):**
-- 10/10 out-of-scope queries correctly refused (NASA rover, Infosys stock, Bitcoin, IPL, Netflix, etc.)
-- 0/40 in-scope queries incorrectly refused
-- Average refusal latency: **0.26s** (no LLM call made)
-
 ---
 
 ### 4. LLM Generation with Fallback Chain
@@ -344,13 +336,6 @@ for model in FALLBACK_MODELS:
         continue
 ```
 
-**System Prompt Design:**
-
-- Strict grounding: *"Answer only from the provided context. Do not use any outside knowledge."*
-- Citation format: *"Always cite sources as [Document Name, Page X]"*
-- Refusal instruction: *"If the context does not contain a clear answer, say so explicitly."*
-- Language mirroring: Response language matches query language (Tamil query → Tamil response)
-
 ---
 
 ### 5. FastAPI Backend
@@ -369,27 +354,6 @@ for model in FALLBACK_MODELS:
 | `GET` | `/api/v1/admin/dataset` | Scheme dataset metadata |
 | `GET` | `/api/v1/admin/feedback` | Feedback summary |
 
-**Request/Response Schema:**
-
-```python
-# POST /api/v1/chat
-class ChatRequest(BaseModel):
-    question: str           # Max 500 chars (enforced)
-    session_id: str | None  # Optional — created if not provided
-
-class ChatResponse(BaseModel):
-    answer: str             # Grounded LLM response with citations
-    session_id: str         # For multi-turn conversation
-    confidence: str         # "high" | "medium" | "low"
-    sources: list[Source]   # PDF document citations
-    llm_called: bool        # False if guardrail refused pre-LLM
-    related_schemes: list[str]  # Similar schemes to explore
-```
-
-**CORS Configuration:**
-
-Supports Railway backend → Vercel frontend with configurable `ALLOWED_ORIGINS` environment variable.
-
 ---
 
 ### 6. Database Layer
@@ -405,10 +369,6 @@ PostgreSQL (Railway)
 ├── feedback          — User thumbs up/down feedback per answer
 └── audit_logs        — Query latency, model used, retrieval scores
 ```
-
-**Graceful Degradation:**
-
-The application handles database connection failures without crashing — queries still return answers, persistence is attempted with retry, and the health endpoint reflects DB status independently.
 
 ---
 
@@ -452,16 +412,6 @@ pytest backend/tests/ -v
 | `test_retrieval.py` | 4 | English, Tamil, exact name, OOD |
 | `test_topic_guard.py` | 40 | 20 OOD + 12 in-domain + 4 scheme + 4 refuse |
 
-### 8-Query Core Benchmark
-
-```
-python backend/evaluation/benchmark_eval.py
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Queries Passed : 8/8 (100.0%)
-MRR@5          : 0.8750
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
 ### 50-Query Audit Benchmark
 
 ```
@@ -474,48 +424,7 @@ Precision@5             : 0.8000
 Recall@5                : 0.8000
 Average Query Latency   : 16.99s
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Category Breakdown:
-  - Flagship    : 10/10 (100.0%)  — Core scheme queries
-  - Colloquial  : 10/10 (100.0%)  — 1-2 word informal queries
-  - Tamil       : 10/10 (100.0%)  — Native Tamil script queries
-  - Specialized : 10/10 (100.0%)  — Edge case / niche schemes
-  - Refusal     : 10/10 (100.0%)  — Out-of-scope rejection
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
-
-### Production Verification (Live Railway)
-
-```
-python backend/evaluation/production_verify.py \
-  --url https://backend-production-0a73.up.railway.app
-
-[PASS]  1/10  Health check endpoint
-[PASS]  2/10  API root reachable
-[PASS]  3/10  Session creation
-[PASS]  4/10  In-scope query — Kalaignar Magalir Urimai (confidence=high)
-[PASS]  5/10  In-scope query — Pudhumai Penn eligibility (confidence=high)
-[PASS]  6/10  In-scope query — CMCHIS health insurance (confidence=high)
-[PASS]  7/10  Out-of-scope refusal — NASA rover (refusal=True)
-[PASS]  8/10  Out-of-scope refusal — stock price (refusal=True)
-[PASS]  9/10  Chat history retrieval
-[PASS] 10/10  Admin stats endpoint
-
-Production Verification: 10/10 PASSED ✅
-```
-
-### Summary Scorecard
-
-| Metric | Score |
-|---|---|
-| Unit Test Pass Rate | **100%** (86/86) |
-| 8-Query Benchmark | **100%** (8/8) — MRR: 0.8750 |
-| 50-Query Audit | **100%** (50/50) — MRR: 0.7600 |
-| Tamil Query Accuracy | **100%** (10/10) |
-| Guardrail Accuracy | **100%** (10/10 refusals correct) |
-| Production Uptime Check | **100%** (10/10) |
-| Unused Imports | **0** |
-| Dead Code / TODO / Debug prints | **0** |
-| Secrets in tracked files | **0** |
 
 ---
 
@@ -525,72 +434,22 @@ Production Verification: 10/10 PASSED ✅
 TNGov-AI-Assistant/
 │
 ├── backend/                          # Python FastAPI application
-│   ├── app/
-│   │   ├── main.py                   # FastAPI app factory, CORS, middleware
-│   │   ├── api/                      # Route handlers (chat, admin, feedback)
-│   │   ├── core/
-│   │   │   └── config.py             # Pydantic Settings (all env vars)
-│   │   ├── db/                       # SQLAlchemy async engine + session
-│   │   ├── models/                   # ORM models (Session, Message, Feedback)
-│   │   ├── prompts/                  # System prompt templates
-│   │   ├── rag/
-│   │   │   ├── bm25_index.py         # BM25 index build + query
-│   │   │   ├── llm_client.py         # Groq client + 6-tier fallback chain
-│   │   │   ├── query_expander.py     # Synonym + alias expansion
-│   │   │   ├── retrieval_models.py   # Pydantic models for retrieval results
-│   │   │   ├── retrieval_service.py  # Hybrid BM25+ChromaDB+RRF pipeline
-│   │   │   ├── topic_guard.py        # Pre-LLM OOD guardrail
-│   │   │   └── vector_store.py       # ChromaDB client wrapper
-│   │   ├── services/                 # Business logic (generation_service.py)
-│   │   └── utils/                    # Shared utilities
-│   │
-│   ├── ingestion/
-│   │   ├── pipeline.py               # ETL orchestrator (incremental, idempotent)
-│   │   ├── pdf_loader.py             # PyMuPDF extraction → PageContent
-│   │   ├── cleaner.py                # Unicode, header/footer, whitespace
-│   │   ├── chunker.py                # LangChain splitter + metadata tagging
-│   │   └── embedder.py               # sentence-transformers batch embedding
-│   │
-│   ├── evaluation/
-│   │   ├── benchmark_eval.py         # 8-query RAG benchmark
-│   │   ├── benchmark_50_eval.py      # 50-query audit (5 categories × 10)
-│   │   ├── production_verify.py      # Live production endpoint verifier
-│   │   ├── run_ragas.py              # RAGAS quality evaluation
-│   │   └── cli.py                    # `python -m evaluation.cli all`
-│   │
+│   ├── app/                          # Main application package
+│   ├── ingestion/                    # PDF ETL ingestion pipeline
+│   ├── evaluation/                   # Evaluation and benchmarking suite
 │   ├── tests/                        # 86-test pytest suite
 │   ├── Dockerfile                    # Multi-stage production Docker image
 │   ├── entrypoint.sh                 # 3-check ChromaDB validation at startup
-│   ├── requirements.txt              # 23 packages (all used)
-│   └── pyproject.toml                # pytest + ruff configuration
+│   └── requirements.txt              # Production dependencies
 │
 ├── frontend/                         # Next.js 16 application
-│   ├── src/
-│   │   ├── app/                      # Next.js App Router pages
-│   │   ├── components/               # Chat, Header, SchemeCard, Confidence
-│   │   └── lib/                      # API client, session utilities
+│   ├── src/                          # App router and components
 │   └── package.json
 │
 ├── schemes/                          # Official TN Govt PDF source documents
-│   ├── Social Security/
-│   ├── Women Welfare/
-│   ├── Education/
-│   ├── Health/
-│   └── Economic Development/
-│
 ├── data/                             # Ingestion artifacts (git-ignored)
-│   ├── extracted/                    # Intermediate page JSON artifacts
-│   ├── metadata/                     # ingested_hashes.json
-│   └── logs/                         # Ingestion manifests
-│
-├── docker/                           # Docker supporting files
-├── docker-compose.yml                # Local development stack
-├── docker-compose.prod.yml           # Production stack
-├── Makefile                          # make dev / test / lint / format
-├── .gitignore                        # .env, chroma_db/, node_modules/, etc.
-├── DEPLOYMENT.md                     # Full Railway + Vercel deployment guide
+├── DEPLOYMENT.md                     # Full Railway deployment guide
 ├── CONTRIBUTING.md                   # Developer setup and contribution guide
-├── RELEASE_NOTES.md                  # Version history
 └── LICENSE                           # MIT
 ```
 
@@ -602,29 +461,9 @@ TNGov-AI-Assistant/
 
 - Python 3.11+
 - Node.js 20+
-- A [Groq API key](https://console.groq.com) (free tier available)
+- A [Groq API key](https://console.groq.com)
 
-### Option 1: Docker (Recommended)
-
-```bash
-git clone https://github.com/aakash1552005/TNGov-AI-Assistant.git
-cd TNGov-AI-Assistant
-
-# Configure environment
-cp backend/.env.example backend/.env
-# Edit backend/.env and set GROQ_API_KEY=gsk_...
-
-# Start full stack (backend + PostgreSQL)
-docker compose up -d --build
-
-# Run one-time ingestion (first run only)
-docker compose exec backend python -m ingestion.cli ingest
-
-# Verify
-curl http://localhost:8000/health
-```
-
-### Option 2: Local Development
+### Local Development
 
 ```bash
 # Backend
@@ -642,10 +481,6 @@ npm run dev
 # → http://localhost:3000
 ```
 
-### Option 3: Cloud Deployment
-
-See **[DEPLOYMENT.md](DEPLOYMENT.md)** for the complete Railway + Vercel deployment guide with screenshots and environment variable reference.
-
 ---
 
 ## 🔧 Environment Variables
@@ -662,34 +497,7 @@ See **[DEPLOYMENT.md](DEPLOYMENT.md)** for the complete Railway + Vercel deploym
 | `CHUNK_OVERLAP` | ⬜ | `125` | Overlap between chunks |
 | `RETRIEVAL_FINAL_CONTEXT_K` | ⬜ | `4` | Number of chunks passed to LLM |
 | `RRF_K` | ⬜ | `60` | RRF smoothing constant |
-| `NEXT_PUBLIC_API_URL` | ✅ (Vercel) | — | Backend URL for frontend |
-
-Full reference: [`backend/.env.example`](backend/.env.example)
-
----
-
-## 🧪 Testing
-
-```bash
-# Full test suite (86 tests)
-cd backend
-python -m pytest tests/ -v
-
-# Run all benchmarks
-python evaluation/benchmark_eval.py          # 8-query core benchmark
-python evaluation/benchmark_50_eval.py       # 50-query audit benchmark
-python evaluation/production_verify.py \
-  --url https://backend-production-0a73.up.railway.app
-
-# Lint and format
-ruff check .          # Zero violations expected
-black --check .       # Formatting check
-
-# Or use Makefile shortcuts
-make test
-make lint
-make format
-```
+| `NEXT_PUBLIC_API_URL` | ✅ | — | Backend URL for frontend (Railway / Build Env) |
 
 ---
 
@@ -707,18 +515,6 @@ make format
 
 ---
 
-## 📄 Documentation
-
-| Document | Description |
-|---|---|
-| [DEPLOYMENT.md](DEPLOYMENT.md) | Complete Railway + Vercel step-by-step guide |
-| [backend/evaluation/README.md](backend/evaluation/README.md) | Benchmark methodology and RAGAS metrics |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | Developer setup, code style, PR process |
-| [RELEASE_NOTES.md](RELEASE_NOTES.md) | v1.0.0 capabilities and deployment notes |
-| [docs/](docs/) | Architecture diagrams and additional documentation |
-
----
-
 ## 🛡️ License
 
 Distributed under the MIT License. See [`LICENSE`](LICENSE) for details.
@@ -727,6 +523,6 @@ Distributed under the MIT License. See [`LICENSE`](LICENSE) for details.
 
 <div align="center">
 
-Built with ❤️ for Tamil Nadu citizens · Powered by Groq LLaMA 3.3 70B · Deployed on Railway + Vercel
+Built with ❤️ for Tamil Nadu citizens · Powered by Groq LLaMA 3.3 70B · Deployed on Railway
 
 </div>
