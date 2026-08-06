@@ -6,9 +6,7 @@ scheme names and provides "Did you mean?" suggestions for fuzzy matches.
 
 from __future__ import annotations
 
-import re
 import difflib
-from typing import Sequence
 
 # ── Colloquial Query & Synonym Dictionary ────────────────────
 SYNONYM_MAP: dict[str, str] = {

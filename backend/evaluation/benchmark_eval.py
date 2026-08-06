@@ -11,7 +11,6 @@ benchmark questions covering:
 from __future__ import annotations
 
 import sys
-import os
 import json
 import time
 from pathlib import Path

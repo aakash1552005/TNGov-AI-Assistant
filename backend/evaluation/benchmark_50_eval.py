@@ -1,4 +1,4 @@
-﻿"""50-Query Comprehensive RAG Evaluation & Benchmark Suite."""
+"""50-Query Comprehensive RAG Evaluation & Benchmark Suite."""
 
 from __future__ import annotations
 import sys, os, json, time
