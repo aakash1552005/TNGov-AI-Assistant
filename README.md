@@ -4,6 +4,8 @@
 
 ### Enterprise-Grade, Production-Ready Multilingual RAG System for Citizen Welfare Intelligence
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-🚀_Open_App-00C853?style=for-the-badge)](https://frontend-production-ee49.up.railway.app)
+
 [![CI Pipeline](https://github.com/aakash1552005/TNGov-AI-Assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/aakash1552005/TNGov-AI-Assistant/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi&logoColor=white)
