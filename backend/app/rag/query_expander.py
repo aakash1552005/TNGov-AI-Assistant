@@ -32,7 +32,7 @@ SYNONYM_MAP: dict[str, str] = {
     "pregnant assistance": "Assistance for Delivery Miscarriage of Pregnancy",
     "delivery assistance": "Assistance for Delivery Miscarriage of Pregnancy",
     "unemployment allowance": "Unemployment Allowance to Differently Abled Persons UYEGP",
-    
+
     # Tamil Colloquial -> Official Term Expansion
     "மகளிர் உரிமை": "Kalaignar Magalir Urimai Thogai Scheme KMUT",
     "பெண்கள் இலவச பஸ்": "Free Bus Travel for Women Vidiyal Payanam Scheme",

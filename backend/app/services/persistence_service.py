@@ -36,13 +36,6 @@ async def get_session(db: AsyncSession, session_id: uuid.UUID) -> ChatSession | 
     return result.scalar_one_or_none()
 
 
-async def get_conversation(db: AsyncSession, session_id: uuid.UUID) -> list[ChatMessage]:
-    """Retrieve all messages in a conversation ordered by created_at."""
-    stmt = select(ChatMessage).where(ChatMessage.session_id == session_id).order_by(ChatMessage.created_at.asc())
-    result = await db.execute(stmt)
-    return list(result.scalars().all())
-
-
 async def save_user_message(
     db: AsyncSession,
     session_id: uuid.UUID,

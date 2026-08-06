@@ -9,6 +9,7 @@ Provides:
 import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI
@@ -44,26 +45,34 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
 
     # Pre-warm vector store embedding model & BM25 index
     try:
-        from ingestion.embedder import _get_model
-        _get_model()
+        from ingestion.embedder import preload_model
+        from ingestion.pipeline import run_pipeline
+
+        preload_model()
         vector_store.get_collection()
         bm25_index._ensure_loaded()
-        
+
         # Auto-ingest dataset into persistent volume if chunk count is out of date (< 37) or model mismatch
         col = vector_store.get_collection()
         stored_model = (col.metadata or {}).get("embedding_model")
         current_chunks = vector_store.get_chunk_count()
         bm25_chunks = bm25_index.get_chunk_count()
-        
-        logger.info("Vector store chunks: %d, BM25 chunks: %d, stored model: %s", current_chunks, bm25_chunks, stored_model)
-        
+
+        logger.info(
+            "Vector store chunks: %d, BM25 chunks: %d, stored model: %s",
+            current_chunks,
+            bm25_chunks,
+            stored_model,
+        )
+
         if current_chunks < 37 or bm25_chunks < 37 or stored_model != settings.embedding_model:
-            logger.info("Rebuilding vector store & BM25 index for current embedding model (%s)...", settings.embedding_model)
-            from pathlib import Path
-            from ingestion.pipeline import run_pipeline
+            logger.info(
+                "Rebuilding vector store & BM25 index for current embedding model (%s)...",
+                settings.embedding_model,
+            )
             run_pipeline(data_dir=Path(settings.data_dir), force=True)
             logger.info("Auto-ingestion complete!")
-            
+
         logger.info("Vector store embedding model and BM25 index pre-warmed successfully")
     except Exception:
         logger.exception("Failed to pre-warm vector store or BM25 index")

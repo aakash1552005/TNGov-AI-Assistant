@@ -46,7 +46,7 @@ def _get_system_metadata() -> dict[str, Any]:
     except Exception:
         ragas_ver = "PARTIAL/NOT_INSTALLED"
 
-    llm_model = settings.groq_model if settings.llm_provider == "groq" else settings.model_name
+    llm_model = settings.groq_model
     return {
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "git_commit_hash": _get_git_commit(),

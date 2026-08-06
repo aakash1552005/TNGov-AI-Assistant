@@ -12,7 +12,7 @@ from __future__ import annotations
 import logging
 import os
 import subprocess
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import APIRouter, Depends
@@ -142,7 +142,7 @@ async def get_admin_version() -> Any:
         git_commit=_get_git_commit(),
         build_timestamp=os.environ.get(
             "BUILD_TIMESTAMP",
-            datetime.now(timezone.utc).isoformat(),
+            datetime.now(UTC).isoformat(),
         ),
         embedding_model=settings.embedding_model,
         llm_provider=settings.llm_provider,
@@ -190,7 +190,7 @@ async def get_admin_dataset() -> Any:
             chunk_ids_sample=chunk_ids_sample,
             chroma_db_path=settings.chroma_db_path,
         )
-    except Exception as exc:
+    except Exception:
         logger.exception("Failed to retrieve dataset manifest")
         return AdminDatasetResponse(
             total_chunks=0,
@@ -246,7 +246,7 @@ async def get_admin_feedback(db: AsyncSession = Depends(get_db)) -> Any:
             down_count=down_count,
             latest_feedback=latest_feedback,
         )
-    except Exception as exc:
+    except Exception:
         logger.exception("Failed to retrieve feedback stats")
         return AdminFeedbackResponse(
             total_feedback=-1,

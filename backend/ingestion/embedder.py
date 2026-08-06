@@ -38,6 +38,12 @@ def _get_model() -> SentenceTransformer:
     return _model
 
 
+def preload_model() -> SentenceTransformer:
+    """Public helper to pre-warm and cache the embedding model."""
+    return _get_model()
+
+
+
 def embed_passages(
     texts: list[str],
     *,
