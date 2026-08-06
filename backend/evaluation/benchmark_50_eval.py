@@ -1,7 +1,7 @@
 """50-Query Comprehensive RAG Evaluation & Benchmark Suite."""
 
 from __future__ import annotations
-import sys, os, json, time
+import sys, json, time
 from pathlib import Path
 
 backend_dir = Path(__file__).resolve().parent.parent
