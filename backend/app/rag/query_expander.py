@@ -32,6 +32,12 @@ SYNONYM_MAP: dict[str, str] = {
     "pregnant assistance": "Assistance for Delivery Miscarriage of Pregnancy",
     "delivery assistance": "Assistance for Delivery Miscarriage of Pregnancy",
     "unemployment allowance": "Unemployment Allowance to Differently Abled Persons UYEGP",
+    "pmegp": "Prime Minister's Employment Generation Programme PMEGP self employment loan subsidy",
+    "pmegp scheme": "Prime Minister's Employment Generation Programme PMEGP self employment loan subsidy",
+    "pmegp schemes": "Prime Minister's Employment Generation Programme PMEGP self employment loan subsidy",
+    "uyegp": "Unemployed Youth Employment Generation Programme UYEGP subsidy",
+    "uyegp scheme": "Unemployed Youth Employment Generation Programme UYEGP subsidy",
+    "nhfdc": "National Handicapped Finance & Development Corporation NHFDC loan",
 
     # Tamil Colloquial -> Official Term Expansion
     "மகளிர் உரிமை": "Kalaignar Magalir Urimai Thogai Scheme KMUT",
