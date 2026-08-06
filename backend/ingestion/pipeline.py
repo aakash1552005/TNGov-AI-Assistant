@@ -24,7 +24,7 @@ from pathlib import Path
 
 from app.core.config import settings
 from app.rag import vector_store
-from ingestion import cleaner, chunker, embedder
+from ingestion import cleaner, chunker, embedder, pdf_loader
 
 logger = logging.getLogger(__name__)
 
