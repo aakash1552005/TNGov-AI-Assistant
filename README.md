@@ -517,9 +517,9 @@ npm run dev
 
 ---
 
-## 🛡️ License
-
-Distributed under the MIT License. See [`LICENSE`](LICENSE) for details.
+## Author
+AAKASH S S
+aakash1552005@gmail.com
 
 ---
 
