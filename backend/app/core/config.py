@@ -30,10 +30,10 @@ class Settings(BaseSettings):
     # Deployment environment: development | staging | production
     app_env: str = "development"
     # Comma-separated CORS origins — set to deployed frontend URL in production
-    # Example: "https://tngov-ai.vercel.app,http://localhost:3000"
-    allowed_origins: str = "http://localhost:3000"
+    # Example: "https://tn-gov-ai-assistant.vercel.app,http://localhost:3000"
+    allowed_origins: str = "http://localhost:3000,https://tn-gov-ai-assistant.vercel.app"
     # Frontend base URL (used for CORS and link generation)
-    frontend_url: str = "http://localhost:3000"
+    frontend_url: str = "https://tn-gov-ai-assistant.vercel.app"
 
     # ── Database ─────────────────────────────────────────────
     database_url: str = "postgresql+asyncpg://postgres:postgres@postgres:5432/tngov"
@@ -80,6 +80,7 @@ class Settings(BaseSettings):
     cors_origins: list[str] = [
         "http://localhost:3000",
         "http://frontend:3000",
+        "https://tn-gov-ai-assistant.vercel.app",
     ]
 
 

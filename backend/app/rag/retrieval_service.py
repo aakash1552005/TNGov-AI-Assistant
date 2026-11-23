@@ -121,9 +121,11 @@ class RetrievalService:
                 "rrf_score": 1.0 / (rrf_k + rank),
             }
 
-        # Score BM25 results by their rank and merge
+        # Score BM25 results by their rank and merge (with exact terminology boost)
         for rank, (chunk_id, bm25_score) in enumerate(bm25_hits, start=1):
-            rrf_contrib = 1.0 / (rrf_k + rank)
+            # Boost high-relevance lexical matches (exact scheme acronyms/names)
+            term_boost = 1.25 if bm25_score >= 10.0 else 1.0
+            rrf_contrib = (1.0 / (rrf_k + rank)) * term_boost
 
             if chunk_id in fused:
                 fused[chunk_id]["bm25_score"] = bm25_score
