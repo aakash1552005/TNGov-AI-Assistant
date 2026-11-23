@@ -4,7 +4,7 @@
 
 ### Enterprise-Grade, Production-Ready Multilingual RAG System for Citizen Welfare Intelligence
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-🚀_Open_App-00C853?style=for-the-badge)](https://frontend-production-ee49.up.railway.app)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-🚀_Open_App-00C853?style=for-the-badge)](https://tngov-ai-assistant.vercel.app/)
 
 [![CI Pipeline](https://github.com/aakash1552005/TNGov-AI-Assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/aakash1552005/TNGov-AI-Assistant/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
@@ -15,7 +15,7 @@
 
 **A production-deployed AI assistant that answers citizen queries about 37+ Tamil Nadu Government welfare schemes — in English and Tamil — using a fully grounded Hybrid RAG pipeline with zero hallucination tolerance.**
 
-[🚀 Try Live Demo](https://frontend-production-ee49.up.railway.app) · [Architecture](#-system-architecture) · [Benchmarks](#-evaluation--benchmarks) · [Quick Start](#-quick-start) · [Deployment Guide](DEPLOYMENT.md)
+[🚀 Try Live Demo](https://tngov-ai-assistant.vercel.app/) · [Architecture](#-system-architecture) · [Benchmarks](#-evaluation--benchmarks) · [Quick Start](#-quick-start) · [Deployment Guide](DEPLOYMENT.md)
 
 </div>
 
@@ -70,12 +70,11 @@ Social Security · Women Welfare · Education · Health Insurance · Agriculture
 
 | Component | Provider | Status | Live Link |
 |---|---|---|---|
-| **Frontend Application** | Railway (Next.js 16) | ✅ Live | [👉 Open Frontend App](https://frontend-production-ee49.up.railway.app) |
-| **Backend REST API** | Railway (FastAPI Docker) | ✅ Live | [👉 Open Backend API](https://backend-production-0a73.up.railway.app) |
-| **PostgreSQL** | Railway Plugin | ✅ Managed | Internal Connection |
-| **Vector Store** | ChromaDB on Railway Volume | ✅ Persistent | `/data/chroma_db` |
+| **Frontend Application** | Vercel (Next.js 16) | ✅ Live | [👉 Open Frontend App](https://tngov-ai-assistant.vercel.app/) |
+| **Backend REST API** | FastAPI / Docker | ✅ Active | [👉 Open API Docs](https://backend-production-0a73.up.railway.app/docs) |
+| **Database & Vector Store** | PostgreSQL + ChromaDB | ✅ Persistent | `/data/chroma_db` |
 
-- **Frontend App:** [https://frontend-production-ee49.up.railway.app](https://frontend-production-ee49.up.railway.app)
+- **Live Web App:** [https://tngov-ai-assistant.vercel.app/](https://tngov-ai-assistant.vercel.app/)
 - **Backend API:** [https://backend-production-0a73.up.railway.app](https://backend-production-0a73.up.railway.app)
 
 > Production verification: 10/10 checks passed against live Railway endpoints (see [Section 5: Evaluation](#-evaluation--benchmarks))
@@ -517,9 +516,12 @@ npm run dev
 
 ---
 
-## Author
-AAKASH S S
-aakash1552005@gmail.com
+## Author & Contact
+
+**Aakash S. S.**
+- **Email**: [aakash1552005@gmail.com](mailto:aakash1552005@gmail.com)
+- **LinkedIn**: [linkedin.com/in/aakash-s-s-88b91a301](https://www.linkedin.com/in/aakash-s-s-88b91a301/)
+- **Website**: [aakash1552005.github.io](https://aakash1552005.github.io/)
 
 ---
 
