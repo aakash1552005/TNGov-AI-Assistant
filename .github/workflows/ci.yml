@@ -53,7 +53,11 @@ jobs:
           LLM_PROVIDER: groq
         run: |
           cd backend
-          python -m evaluation.cli quick-check
+          if [ -n "$GROQ_API_KEY" ]; then
+            python -m evaluation.cli quick-check
+          else
+            echo "Notice: GROQ_API_KEY not configured in GitHub repository secrets — skipping external API smoke test."
+          fi
 
       - name: Upload Evaluation Artifacts
         uses: actions/upload-artifact@v4
