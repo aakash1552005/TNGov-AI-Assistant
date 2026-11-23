@@ -59,6 +59,14 @@ htmlcov/
 .mypy_cache/
 .ruff_cache/
 
+# ─── Internal Development & Audit Documents ─────────────────
+DEPLOYMENT.md
+ENTERPRISE_PRODUCTION_REPORT.md
+PRODUCTION_AUDIT.md
+PROJECT_SPEC.md
+RELEASE_NOTES.md
+docs/interview_questions.md
+
 # ─── Misc ─────────────────────────────────────────────────────
 *.log
 *.bak

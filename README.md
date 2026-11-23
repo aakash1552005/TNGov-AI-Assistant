@@ -274,7 +274,8 @@ TNGov-AI-Assistant/
 │   └── package.json          # Next.js 16 & React 19 dependencies
 │
 ├── schemes/                  # Official Tamil Nadu Government PDF source documents
-├── DEPLOYMENT.md             # Production deployment and verification guide
+├── docs/                     # Technical architecture & API reference documentation
+├── CONTRIBUTING.md           # Developer guidelines & contribution setup
 ├── Makefile                  # Automation commands for build, test, and ingestion
 └── LICENSE                   # MIT License
 ```
