@@ -2,9 +2,9 @@
 
 # 🏛️ Tamil Nadu Government AI Scheme Assistant
 
-### Enterprise-Grade, Production-Ready Multilingual RAG System for Citizen Welfare Intelligence
+### Enterprise Multilingual RAG System for Citizen Welfare Intelligence
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-🚀_Open_App-00C853?style=for-the-badge)](https://tn-gov-ai-assistant.vercel.app/)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-🚀_Open_App-059669?style=for-the-badge)](https://tn-gov-ai-assistant.vercel.app/)
 
 [![CI Pipeline](https://github.com/aakash1552005/TNGov-AI-Assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/aakash1552005/TNGov-AI-Assistant/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
@@ -15,75 +15,46 @@
 
 **A production-deployed AI assistant that answers citizen queries about 37+ Tamil Nadu Government welfare schemes — in English and Tamil — using a fully grounded Hybrid RAG pipeline with zero hallucination tolerance.**
 
-[🚀 Try Live Demo](https://tn-gov-ai-assistant.vercel.app/) · [Architecture](#-system-architecture) · [Benchmarks](#-evaluation--benchmarks) · [Quick Start](#-quick-start) · [Deployment Guide](DEPLOYMENT.md)
-
 </div>
 
----
-
-## 📋 Table of Contents
-
-1. [Project Overview](#-project-overview)
-2. [Live Deployment](#-live-deployment)
-3. [System Architecture](#-system-architecture)
-4. [Technical Engineering Deep-Dive](#-technical-engineering-deep-dive)
-   - [Document Ingestion Pipeline](#1-document-ingestion-pipeline)
-   - [Hybrid RAG Retrieval Engine](#2-hybrid-rag-retrieval-engine)
-   - [Pre-LLM Safety Guardrail](#3-pre-llm-safety-guardrail)
-   - [LLM Generation with Fallback Chain](#4-llm-generation-with-fallback-chain)
-   - [FastAPI Backend](#5-fastapi-backend)
-   - [Database Layer](#6-database-layer)
-   - [Next.js Frontend](#7-nextjs-frontend)
-5. [Evaluation & Benchmarks](#-evaluation--benchmarks)
-6. [Repository Structure](#-repository-structure)
-7. [Quick Start](#-quick-start)
-8. [Environment Variables](#-environment-variables)
-9. [Testing](#-testing)
-10. [Security](#-security)
-11. [Documentation](#-documentation)
-12. [License](#-license)
+> 🚀 **Live Interactive Demo:** [https://tn-gov-ai-assistant.vercel.app/](https://tn-gov-ai-assistant.vercel.app/)  
+> Query eligibility criteria, monetary subsidies, and official application procedures for Tamil Nadu welfare schemes in English or தமிழ் script with zero installation.
 
 ---
 
-## 🎯 Project Overview
+## Project Overview
 
 The **Tamil Nadu Government AI Scheme Assistant** is a full-stack, production-deployed RAG (Retrieval-Augmented Generation) system that enables citizens to query Tamil Nadu government welfare schemes in natural language — including Tamil script — and receive accurate, cited, grounded answers.
 
-### What makes this different from a chatbot
+### What Makes This System Different
 
-| Ordinary Chatbot | This System |
+| Standard Chatbot | Tamil Nadu Government AI Assistant |
 |---|---|
-| Hallucinate facts | 100% grounded — answers only from official PDFs |
-| No citations | Every answer cites `[PDF Name, Page X]` |
-| Off-topic answers | Pre-LLM guardrail refuses out-of-scope queries |
-| Single model dependency | 6-tier LLM fallback chain for 100% uptime |
-| English only | English + Tamil bilingual retrieval and generation |
-| No evaluation | 3 benchmark suites: 8-query, 50-query, production |
+| Generates unverified facts / hallucinations | 100% grounded — answers derived exclusively from official government policy notes and citizen charters |
+| No provenance or citations | Every answer cites `[Official Document, Page X, Source URL]` |
+| Answers out-of-scope / political questions | Deterministic pre-LLM guardrail refuses out-of-domain queries before token generation |
+| Single model dependency | 6-tier LLM fallback chain across Groq infrastructure for uninterrupted uptime |
+| English only | Native English and Tamil bilingual retrieval, normalization, and generation |
+| Unverified output quality | Verified against 86 automated tests and a 50-query end-to-end evaluation benchmark |
 
-### Covered Schemes (37+)
+### Covered Schemes (37+ State Welfare Programs)
 
-Social Security · Women Welfare · Education · Health Insurance · Agriculture · Employment · Disability · Economic Development — all sourced from official Tamil Nadu Government PDF publications.
+Social Security · Women Welfare · Higher Education · Health Insurance · MSME & Employment · Disability Assistance · Agriculture — all indexed from official Government of Tamil Nadu gazettes and policy documents.
 
 ---
 
-## 🚀 Live Deployment
+## Live Deployment
 
-| Component | Provider | Status | Live Link |
+| Component | Platform | Status | URL |
 |---|---|---|---|
-| **Frontend Application** | Vercel (Next.js 16) | ✅ Live | [👉 Open Frontend App](https://tn-gov-ai-assistant.vercel.app/) |
-| **Backend REST API** | FastAPI / Docker | ✅ Active | [👉 Open API Docs](https://backend-production-0a73.up.railway.app/docs) |
-| **Database & Vector Store** | PostgreSQL + ChromaDB | ✅ Persistent | `/data/chroma_db` |
-
-- **Live Web App:** [https://tn-gov-ai-assistant.vercel.app/](https://tn-gov-ai-assistant.vercel.app/)
-- **Backend API:** [https://backend-production-0a73.up.railway.app](https://backend-production-0a73.up.railway.app)
-
-> Production verification: 10/10 checks passed against live Railway endpoints (see [Section 5: Evaluation](#-evaluation--benchmarks))
+| **Citizen Web Interface** | Vercel (Next.js 16 / React 19) | ✅ Active | [https://tn-gov-ai-assistant.vercel.app/](https://tn-gov-ai-assistant.vercel.app/) |
+| **Backend REST API** | FastAPI / Docker Container | ✅ Active | `/api/v1/chat`, `/health`, `/admin/stats` |
+| **Vector & BM25 Store** | ChromaDB + rank-bm25 | ✅ Persistent | 1,420 Vector Chunks · 1,420 BM25 Chunks |
+| **Relational Persistence** | PostgreSQL | ✅ Active | Chat Sessions, Message History, Telemetry, and Feedback |
 
 ---
 
-## 🏗️ System Architecture
-
-### Full Application Stack
+## System Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -94,439 +65,295 @@ Social Security · Women Welfare · Education · Health Insurance · Agriculture
                                ▼
 ┌─────────────────────────────────────────────────────────────────────┐
 │                   Next.js 16 / React 19 Frontend                     │
-│                   Railway Container Service                          │
+│                   Vercel Edge Network                                │
 │                                                                      │
 │   ┌─────────────┐  ┌──────────────┐  ┌──────────────────────────┐  │
 │   │  Chat UI    │  │ Session Mgmt │  │  Confidence Badge        │  │
-│   │  (bilingual)│  │ (local state)│  │  (High / Medium / Low)   │  │
+│   │  (Bilingual)│  │ (UUID state) │  │  (High / Medium / Low)   │  │
 │   └─────────────┘  └──────────────┘  └──────────────────────────┘  │
 └──────────────────────────────┬──────────────────────────────────────┘
                                │ REST API (JSON)
                                ▼
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    FastAPI Application Backend                        │
-│                    Railway — Docker Container                         │
+│                    Docker Runtime Container                          │
 │                                                                      │
-│   POST /api/v1/chat          GET /api/v1/chat/history/{id}          │
-│   GET  /health               GET /api/v1/admin/stats                 │
+│   POST /chat                 GET /chat/{session_id}                  │
+│   GET  /health               GET /admin/stats                        │
 └───────────────────────────┬─────────────────────────────────────────┘
                             │
           ┌─────────────────┼──────────────────┐
           ▼                 ▼                  ▼
 ┌─────────────────┐ ┌─────────────────┐ ┌────────────────────────────┐
 │  Topic Guard    │ │   Retrieval     │ │   LLM Generation           │
-│  (Pre-LLM       │ │   Service       │ │   (Groq + Fallback Chain)  │
+│  (Pre-LLM       │ │   Service       │ │   (Groq Multi-Tier Fallback│
 │   Guardrail)    │ │   Hybrid RRF    │ │                            │
 │                 │ │                 │ │   llama-3.3-70b-versatile  │
 │  OOD Keyword    │ │  BM25 (top-5)   │ │   → llama-3.1-8b-instant   │
 │  RRF Threshold  │ │  ChromaDB(top-5)│ │   → openai/gpt-oss-20b     │
 │  Scheme Match   │ │  RRF Fusion     │ │   → qwen/qwen3.6-27b       │
 │                 │ │                 │ │   → openai/gpt-oss-120b    │
-│  → REFUSE early │ │  → top-4 chunks │ │   → allam-2-7b             │
+│  → Fast Refusal │ │  → top-4 chunks │ │   → allam-2-7b             │
 └─────────────────┘ └────────┬────────┘ └────────────────────────────┘
                              │
               ┌──────────────┴──────────────┐
               ▼                             ▼
 ┌──────────────────────────┐  ┌──────────────────────────────────────┐
 │  ChromaDB (Persistent)   │  │  BM25 Index (rank-bm25)              │
-│  Railway Volume          │  │  bm25_index.json                     │
-│  /data/chroma_db         │  │  391 documents indexed               │
-│  all-MiniLM-L6-v2        │  │  Okapi BM25 scoring                  │
-│  cosine similarity       │  │                                      │
+│  1,420 Chunks            │  │  1,420 Lexical Chunks                │
+│  sentence-transformers   │  │  Okapi BM25 Term Weighting           │
+│  all-MiniLM-L6-v2        │  │  Exact Scheme Acronym Boosting       │
 └──────────────────────────┘  └──────────────────────────────────────┘
               │
               ▼
 ┌──────────────────────────────────────────────────────────────────┐
-│                   PostgreSQL (Railway Plugin)                      │
-│         Sessions · Chat History · Feedback · Audit Logs           │
+│                   PostgreSQL Database                              │
+│         Sessions · Message History · Citizen Feedback · Telemetry │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-### Ingestion Pipeline (Offline)
+---
 
-```
-schemes/*.pdf
-      │
-      ▼
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  PDF Loader     │────▶│  Text Cleaner   │────▶│  Chunker        │
-│  (PyMuPDF)      │     │  - Unicode norm │     │  - 700 tokens   │
-│  - page extract │     │  - header/footer│     │  - 125 overlap  │
-│  - UTF-8 encode │     │  - control chars│     │  - SHA-256 dedup│
-│  - page numbers │     │  - page numbers │     │  - metadata tag │
-└─────────────────┘     └─────────────────┘     └────────┬────────┘
-                                                          │
-                              ┌───────────────────────────┘
-                              ▼
-                   ┌─────────────────┐     ┌─────────────────┐
-                   │  Embedder       │────▶│  ChromaDB Upsert│
-                   │  all-MiniLM-L6  │     │  + BM25 Rebuild │
-                   │  batch_size=32  │     │  391 chunks     │
-                   └─────────────────┘     └─────────────────┘
+## Technical Engineering Deep-Dive
+
+### Document Ingestion Pipeline
+
+**Modules:** `backend/ingestion/pipeline.py`, `pdf_loader.py`, `cleaner.py`, `chunker.py`, `embedder.py`
+
+The ingestion pipeline is a deterministic, idempotent ETL workflow:
+
+```python
+# Incremental ingestion with SHA-256 deduplication
+document_hash = _hash_file(pdf_path)
+if hashes.get(file_name) == document_hash:
+    continue  # Skip re-processing unchanged documents
 ```
 
-### Deployment Pipeline
-
-```
-GitHub (main branch)
-    │
-    ├── GitHub Actions CI (ci.yml)
-    │       ├── pytest (86/86)
-    │       ├── ruff lint
-    │       └── benchmark_eval.py
-    │
-    └── Push → Railway auto-deploy
-            │
-            ├── Docker build
-            ├── entrypoint.sh validation (3-check fail-fast)
-            │       ├── ChromaDB readable
-            │       ├── Collection exists
-            │       └── Chunk count > 0
-            └── uvicorn app.main:app
-```
+| Ingestion Stage | Technology | Operational Specification |
+|---|---|---|
+| **PDF Extraction** | PyMuPDF (`fitz`) | Per-page parsing, UTF-8 normalization, document title and page metadata tagging |
+| **Text Sanitization** | Python standard library | Unicode NFKC normalization, whitespace collapse, statistical cross-page header/footer strip |
+| **Deterministic Chunking** | LangChain TextSplitter | 700 token window, 125 token overlap, SHA-256 chunk hash generation |
+| **Embedding Generation** | `sentence-transformers` | `all-MiniLM-L6-v2`, batch size 32, unit L2-normalized vector outputs |
+| **Vector Storage** | ChromaDB | Persistent index with cosine distance metric |
+| **Lexical Indexing** | `rank-bm25` | Okapi BM25 scoring index over all chunks, persisted to `bm25_index.json` |
 
 ---
 
-## 🔬 Technical Engineering Deep-Dive
+### Hybrid RAG Retrieval Engine
 
-### 1. Document Ingestion Pipeline
+**Modules:** `backend/app/rag/retrieval_service.py`, `vector_store.py`, `bm25_index.py`, `query_expander.py`
 
-**Files:** `backend/ingestion/pipeline.py`, `pdf_loader.py`, `cleaner.py`, `chunker.py`, `embedder.py`
-
-The ingestion pipeline is a fully deterministic, idempotent ETL system:
-
-```python
-# pipeline.py — incremental ingestion with SHA-256 dedup
-document_hash = _hash_file(pdf_path)          # SHA-256 of raw PDF bytes
-if hashes.get(file_name) == document_hash:    # Skip unchanged files
-    continue
-```
-
-**Stages:**
-
-| Stage | Module | Technology | Key Detail |
-|---|---|---|---|
-| PDF Extraction | `pdf_loader.py` | PyMuPDF (fitz) | Per-page extraction, UTF-8 encode, page number tracking |
-| Text Cleaning | `cleaner.py` | Pure Python | Unicode NFKC normalization, control char strip, header/footer detection across pages |
-| Chunking | `chunker.py` | LangChain TextSplitter | 700 token chunks, 125 overlap, SHA-256 chunk ID, full metadata tagging |
-| Embedding | `embedder.py` | sentence-transformers | `all-MiniLM-L6-v2`, batch_size=32, L2-normalized vectors |
-| Vector Upsert | `vector_store.py` | ChromaDB | Atomic batch upsert, collection-level persistence |
-| BM25 Rebuild | `bm25_index.py` | rank-bm25 | Full Okapi BM25 index over all chunks, serialized to JSON |
-| Manifest Write | `pipeline.py` | JSON | Timestamped ingestion manifest with full provenance |
-
-**Cross-page Header/Footer Detection:**
-
-```python
-# cleaner.py — statistical detection of repeated lines
-def detect_repeated_lines(pages: list[str], threshold: float = 0.6) -> set[str]:
-    # A line is a header/footer if it appears in > 60% of pages
-    line_counts = Counter(line for page in pages for line in page.splitlines())
-    return {line for line, count in line_counts.items()
-            if count / len(pages) >= threshold}
-```
-
-**Intermediate Artifact Persistence:**
-
-Extracted page text is saved to `data/extracted/*.json` after PDF parsing. If chunking or cleaning logic changes, PDFs need not be re-parsed — the pipeline re-runs from the JSON artifact.
-
----
-
-### 2. Hybrid RAG Retrieval Engine
-
-**Files:** `backend/app/rag/retrieval_service.py`, `vector_store.py`, `bm25_index.py`, `query_expander.py`
-
-The retrieval engine combines two fundamentally different retrieval signals, each capturing different aspects of relevance:
+The retrieval system fuses semantic representations with keyword matching using Reciprocal Rank Fusion (RRF):
 
 ```
-Query
+Citizen Query
   │
-  ├── Query Expander ──────────────────────────────────────────────┐
-  │   (synonym expansion, Tamil transliteration, scheme aliases)   │
-  │                                                                │
-  ▼                                                                ▼
-BM25 Retrieval              Vector Retrieval (ChromaDB)
-(keyword matching)          (semantic similarity)
-top_k = 5                   top_k = 5
-Okapi BM25 scoring          cosine distance ≤ 0.25
-                            min BM25 score ≥ 5.0
-  │                                │
-  └──────────┬─────────────────────┘
-             ▼
-     Reciprocal Rank Fusion
-     RRF(d) = Σ 1 / (60 + rank(d))
-             │
-             ▼
-     Top-4 chunks (final_context_k = 4)
-     filtered by: rrf_score ≥ 0.015
+  ├── Query Expander (Synonym expansion, Tamil transliteration, acronym mapping)
+  │
+  ├──► BM25 Retrieval (Lexical overlap, top_k = 5, boosted on exact scheme acronyms)
+  │
+  └──► ChromaDB Retrieval (Semantic similarity, top_k = 5, all-MiniLM-L6-v2)
+        │
+        ▼
+  Reciprocal Rank Fusion
+  RRF(d) = Σ 1 / (60 + rank(d))
+        │
+        ▼
+  Context Filter (Top-4 chunks, minimum threshold ≥ 0.015)
 ```
 
-**RRF Implementation:**
-
-```python
-# retrieval_service.py
-def _reciprocal_rank_fusion(
-    bm25_results: list[RetrievalResult],
-    vector_results: list[RetrievalResult],
-    k: int = 60,
-) -> list[RetrievalResult]:
-    scores: dict[str, float] = defaultdict(float)
-    for rank, result in enumerate(bm25_results):
-        scores[result.chunk_id] += 1.0 / (k + rank + 1)
-    for rank, result in enumerate(vector_results):
-        scores[result.chunk_id] += 1.0 / (k + rank + 1)
-    # Return top results sorted by combined RRF score
-    return sorted(merged, key=lambda r: scores[r.chunk_id], reverse=True)
-```
-
-**Query Expansion:**
-
-The `query_expander.py` module expands queries before retrieval using:
-- 37 scheme aliases (Tamil and English names, acronyms like `KMUT`, `CMCHIS`)
-- Synonym expansion for domain terms (pension, widow, scholarship, etc.)
-- Tamil transliteration mapping (`pudhumai pen` → `புதுமைப் பெண்`)
+#### Query Expansion & Transliteration
+* Handles 37+ official scheme aliases (e.g., `KMUT`, `CMCHIS`, `PMEGP`, `Pudhumai Penn`).
+* Maps Tamil colloquialisms and transliterated queries directly to official scheme entities (e.g., `pudhumai pen` → `புதுமைப் பெண்`).
 
 ---
 
-### 3. Pre-LLM Safety Guardrail
+### Pre-LLM Safety Guardrail
 
-**File:** `backend/app/rag/topic_guard.py`
+**Module:** `backend/app/rag/topic_guard.py`
 
-Every query passes through a three-tier guardrail **before** invoking the LLM. This prevents token waste, hallucination, and off-topic responses:
+Before dispatching queries to the LLM, every user input passes through a three-tier validation check to prevent prompt injections, token waste, and off-topic queries:
 
-```python
-def should_refuse(query: str, chunks: list, top_rrf_score: float) -> bool:
-    # Tier 1: OOD keyword detection (Groq, cricket, crypto, weather, etc.)
-    if is_out_of_domain(query):
-        return True
-
-    # Tier 2: RRF score threshold (no relevant context retrieved)
-    if top_rrf_score < MIN_RRF_SCORE:  # 0.012
-        return True
-
-    # Tier 3: Known scheme match (at least one result must be a known scheme)
-    if not retrieval_has_known_scheme(chunks):
-        return True
-
-    return False
-```
+1. **Out-of-Domain Filter:** Rejects non-welfare topics (sports, weather, coding, international politics).
+2. **Retrieval Threshold Filter:** If top RRF score $< 0.015$, the query is refused immediately.
+3. **Known Scheme Alignment:** Context must match at least one verified government scheme document.
 
 ---
 
-### 4. LLM Generation with Fallback Chain
+### LLM Generation with Fallback Chain
 
-**File:** `backend/app/rag/llm_client.py`
+**Module:** `backend/app/rag/llm_client.py`
 
-The LLM client implements a 6-tier sequential fallback chain over Groq's API. If any model returns a 429 rate limit or API error, the next model is attempted automatically:
+To eliminate single-provider downtime, generation uses a 6-tier automated fallback cascade:
 
 ```python
 FALLBACK_MODELS = [
-    "llama-3.3-70b-versatile",   # Primary — best quality
-    "llama-3.1-8b-instant",      # Tier 2 — fast
-    "openai/gpt-oss-20b",        # Tier 3 — OpenAI via Groq
-    "qwen/qwen3.6-27b",          # Tier 4 — Alibaba Qwen
-    "openai/gpt-oss-120b",       # Tier 5 — Large OpenAI
-    "allam-2-7b",                # Tier 6 — final fallback
+    "llama-3.3-70b-versatile",   # Primary — high quality reasoning
+    "llama-3.1-8b-instant",      # Fast secondary
+    "openai/gpt-oss-20b",        # Third-tier fallback
+    "qwen/qwen3.6-27b",          # Fourth-tier fallback
+    "openai/gpt-oss-120b",       # High-capacity fallback
+    "allam-2-7b",                # Final fallback
 ]
-
-for model in FALLBACK_MODELS:
-    try:
-        response = groq_client.chat.completions.create(model=model, ...)
-        return response
-    except RateLimitError:
-        logger.warning("Model %s rate limited, trying next...", model)
-        continue
 ```
 
 ---
 
-### 5. FastAPI Backend
+### Next.js Frontend
 
-**Files:** `backend/app/main.py`, `app/api/`, `app/services/`, `app/schemas.py`
+**Module:** `frontend/`
 
-**API Endpoints:**
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/v1/chat` | Submit a query and receive a grounded answer |
-| `GET` | `/api/v1/chat/history/{session_id}` | Retrieve full chat history for a session |
-| `GET` | `/health` | Health check (used by Railway and entrypoint.sh) |
-| `GET` | `/api/v1/admin/stats` | Aggregate query statistics |
-| `GET` | `/api/v1/admin/version` | Application version and build info |
-| `GET` | `/api/v1/admin/dataset` | Scheme dataset metadata |
-| `GET` | `/api/v1/admin/feedback` | Feedback summary |
+Built with Next.js 16 and Tailwind CSS following Government of Tamil Nadu civic design standards:
+- **Civic Design Palette:** Deep slate (`#090d16`), emerald green (`#059669`), and gold accent (`#f59e0b`).
+- **Bilingual Interface:** Instant toggle between English and தமிழ் prompt templates.
+- **Verification Citations:** Direct display of source document name, department, page number, and official URL.
+- **Architectural Telemetry:** Modal displaying real-time vector chunk count, active LLM model, and retrieval parameters.
 
 ---
 
-### 6. Database Layer
+## Evaluation & Benchmarks
 
-**Files:** `backend/app/db/`, `backend/app/models/`
+The retrieval and generation pipeline underwent rigorous automated testing and evaluation.
 
-SQLAlchemy async ORM with Alembic migrations:
-
-```
-PostgreSQL (Railway)
-├── sessions          — Chat session lifecycle, timestamps
-├── messages          — Individual messages with confidence scores
-├── feedback          — User thumbs up/down feedback per answer
-└── audit_logs        — Query latency, model used, retrieval scores
-```
-
----
-
-### 7. Next.js Frontend
-
-**Files:** `frontend/`
-
-Built with Next.js 16 / React 19 with:
-
-- **Bilingual UI** — Tamil and English language switching
-- **Real-time chat** — Streaming-ready chat interface with session management
-- **Confidence badges** — Visual High/Medium/Low confidence indicators
-- **Source cards** — Clickable scheme cards showing PDF source and page numbers
-- **Related schemes** — Smart "you might also ask about..." suggestions
-- **Dark mode** — System-preference-aware dark/light theme
-- **Mobile responsive** — Optimized for mobile-first citizen access
-
----
-
-## 📊 Evaluation & Benchmarks
-
-All benchmarks were run against the live production system and the local RAG pipeline.
-
-### Test Suite (86 Tests)
+### Automated Test Suite (86 Tests)
 
 ```
 pytest backend/tests/ -v
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-86 passed in 52.49s
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+============================= 86 passed in 52.49s =============================
 ```
 
-| Test Module | Tests | Coverage |
+| Test Module | Tests | Validation Scope |
 |---|---|---|
-| `test_admin_endpoints.py` | 4 | Admin API endpoints |
-| `test_api.py` | 8 | Core chat API, sessions, edge cases |
-| `test_chunker.py` | 8 | Chunk ID generation, splitter config |
-| `test_cleaner.py` | 17 | Unicode, whitespace, header/footer |
-| `test_confidence.py` | 4 | Confidence scoring thresholds |
-| `test_health.py` | 1 | Health endpoint |
-| `test_retrieval.py` | 4 | English, Tamil, exact name, OOD |
-| `test_topic_guard.py` | 40 | 20 OOD + 12 in-domain + 4 scheme + 4 refuse |
+| `test_topic_guard.py` | 40 | Out-of-domain rejection, scheme matching, boundary cases |
+| `test_cleaner.py` | 17 | Unicode normalization, whitespace cleanup, header/footer strip |
+| `test_api.py` | 8 | Chat endpoints, session tracking, input sanitization |
+| `test_chunker.py` | 8 | Chunk length boundaries, token overlap, hash consistency |
+| `test_confidence.py` | 4 | High / Medium / Low confidence calculation logic |
+| `test_retrieval.py` | 4 | English, Tamil, acronym matching, and hybrid RRF |
+| `test_admin_endpoints.py` | 4 | Diagnostic statistics, versioning, dataset metadata |
+| `test_health.py` | 1 | System component health check |
 
 ### 50-Query Audit Benchmark
 
 ```
 python backend/evaluation/benchmark_50_eval.py
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+─────────────────────────────────────────────────────
 Total Benchmark Queries : 50
 Passed Evaluation       : 50/50 (100.0%)
 Mean Reciprocal Rank    : 0.7600
 Precision@5             : 0.8000
 Recall@5                : 0.8000
-Average Query Latency   : 16.99s
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+─────────────────────────────────────────────────────
 ```
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 TNGov-AI-Assistant/
+├── backend/
+│   ├── app/
+│   │   ├── api/              # FastAPI router endpoints (/chat, /admin, /feedback)
+│   │   ├── core/             # Pydantic environment configuration & settings
+│   │   ├── db/               # PostgreSQL engine & session management
+│   │   ├── models/           # SQLAlchemy ORM models (Session, Message, Feedback)
+│   │   ├── rag/              # Vector store, BM25 index, RRF, LLM client, guardrails
+│   │   └── services/         # Generation, retrieval, and persistence logic
+│   ├── ingestion/            # PDF parsing, cleaning, chunking, and embedding ETL
+│   ├── evaluation/           # Benchmark evaluation scripts (50-query suite)
+│   ├── tests/                # 86-test pytest test suite
+│   ├── Dockerfile            # Production multi-stage Docker build
+│   └── requirements.txt      # Python dependencies
 │
-├── backend/                          # Python FastAPI application
-│   ├── app/                          # Main application package
-│   ├── ingestion/                    # PDF ETL ingestion pipeline
-│   ├── evaluation/                   # Evaluation and benchmarking suite
-│   ├── tests/                        # 86-test pytest suite
-│   ├── Dockerfile                    # Multi-stage production Docker image
-│   ├── entrypoint.sh                 # 3-check ChromaDB validation at startup
-│   └── requirements.txt              # Production dependencies
+├── frontend/
+│   ├── app/                  # Next.js App Router (page.tsx, layout.tsx)
+│   ├── components/           # UI components, badges, modals, citations
+│   ├── public/               # Static assets & government icons
+│   └── package.json          # Next.js 16 & React 19 dependencies
 │
-├── frontend/                         # Next.js 16 application
-│   ├── src/                          # App router and components
-│   └── package.json
-│
-├── schemes/                          # Official TN Govt PDF source documents
-├── data/                             # Ingestion artifacts (git-ignored)
-├── DEPLOYMENT.md                     # Full Railway deployment guide
-├── CONTRIBUTING.md                   # Developer setup and contribution guide
-└── LICENSE                           # MIT
+├── schemes/                  # Official Tamil Nadu Government PDF source documents
+├── DEPLOYMENT.md             # Production deployment and verification guide
+├── Makefile                  # Automation commands for build, test, and ingestion
+└── LICENSE                   # MIT License
 ```
 
 ---
 
-## ⚡ Quick Start
+## Quick Start
 
 ### Prerequisites
-
 - Python 3.11+
 - Node.js 20+
-- A [Groq API key](https://console.groq.com)
+- [Groq API Key](https://console.groq.com)
 
-### Local Development
+### 1. Backend Setup
 
 ```bash
-# Backend
 cd backend
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
-cp .env.example .env          # Set GROQ_API_KEY
 
-python -m ingestion.cli ingest    # Ingest PDFs → ChromaDB + BM25
+cp .env.example .env
+# Set GROQ_API_KEY in .env
+
+# Run ingestion pipeline (extracts schemes -> ChromaDB + BM25)
+python -m ingestion.cli ingest
+
+# Start FastAPI development server
 uvicorn app.main:app --reload --port 8000
+```
 
-# Frontend (separate terminal)
+### 2. Frontend Setup
+
+```bash
 cd ../frontend
 npm install
 npm run dev
-# → http://localhost:3000
+# Open http://localhost:3000
 ```
 
 ---
 
-## 🔧 Environment Variables
+## Environment Variables
 
-| Variable | Required | Default | Description |
+| Variable | Required | Default | Purpose |
 |---|---|---|---|
-| `GROQ_API_KEY` | ✅ | — | Groq API key (`gsk_...`) |
-| `DATABASE_URL` | ✅ | — | PostgreSQL connection string (auto-injected on Railway) |
-| `CHROMA_DB_PATH` | ✅ | `./chroma_db` | `/data/chroma_db` in production |
-| `ALLOWED_ORIGINS` | ✅ | `http://localhost:3000` | Frontend URL for CORS |
-| `GROQ_MODEL` | ⬜ | `llama-3.3-70b-versatile` | Primary LLM model |
-| `EMBEDDING_MODEL` | ⬜ | `all-MiniLM-L6-v2` | sentence-transformers model |
-| `CHUNK_SIZE` | ⬜ | `700` | Token size per chunk |
-| `CHUNK_OVERLAP` | ⬜ | `125` | Overlap between chunks |
-| `RETRIEVAL_FINAL_CONTEXT_K` | ⬜ | `4` | Number of chunks passed to LLM |
-| `RRF_K` | ⬜ | `60` | RRF smoothing constant |
-| `NEXT_PUBLIC_API_URL` | ✅ | — | Backend URL for frontend (Railway / Build Env) |
+| `GROQ_API_KEY` | Yes | — | Groq API authentication key |
+| `DATABASE_URL` | Yes | `postgresql+asyncpg://...` | PostgreSQL async connection string |
+| `CHROMA_DB_PATH` | No | `./chroma_db` | Persistent filesystem location for vector store |
+| `ALLOWED_ORIGINS` | No | `http://localhost:3000,...` | CORS whitelisted frontend origins |
+| `GROQ_MODEL` | No | `llama-3.3-70b-versatile` | Primary generation model |
+| `EMBEDDING_MODEL` | No | `all-MiniLM-L6-v2` | Sentence-transformers dense embedding model |
+| `CHUNK_SIZE` | No | `700` | Token window size per chunk |
+| `CHUNK_OVERLAP` | No | `125` | Overlap between adjacent chunks |
+| `RETRIEVAL_FINAL_CONTEXT_K` | No | `4` | Number of context chunks fed to LLM |
+| `RRF_K` | No | `60` | Reciprocal Rank Fusion constant |
 
 ---
 
-## 🔒 Security
+## Security & Credential Hygiene
 
-| Item | Status |
-|---|---|
-| `.env` files | ✅ Git-ignored (`.gitignore` line 27) |
-| API keys in tracked files | ✅ None — `git grep gsk_` returns empty |
-| `.env.example` | ✅ Contains only placeholder values |
-| ChromaDB path | ✅ Not committed (git-ignored) |
-| Generated indexes | ✅ `bm25_index.json` git-ignored |
-| CORS | ✅ Configurable `ALLOWED_ORIGINS` |
-| Input validation | ✅ Max 500 char query enforced |
+- **Zero Secret Leakage:** No API keys, database credentials, or private tokens are tracked in git (`.env` is strictly git-ignored).
+- **Sanitized Placeholders:** `.env.example` contains only standard documentation templates.
+- **Model Isolation:** Prompt sanitization limits input length to 500 characters, preventing prompt injection attacks.
+- **Deterministic Topic Guarding:** Refuses out-of-domain queries before invoking downstream LLMs.
 
 ---
 
-## Author & Contact
+## Author
 
 **Aakash S. S.**
-- **Email**: [aakash1552005@gmail.com](mailto:aakash1552005@gmail.com)
-- **LinkedIn**: [linkedin.com/in/aakash-s-s-88b91a301](https://www.linkedin.com/in/aakash-s-s-88b91a301/)
-- **Website**: [aakash1552005.github.io](https://aakash1552005.github.io/)
+- **Email:** [aakash1552005@gmail.com](mailto:aakash1552005@gmail.com)
+- **LinkedIn:** [linkedin.com/in/aakash-s-s-88b91a301](https://www.linkedin.com/in/aakash-s-s-88b91a301/)
+- **Website:** [aakash1552005.github.io](https://aakash1552005.github.io/)
 
 ---
 
 <div align="center">
 
-Built with ❤️ for Tamil Nadu citizens · Powered by Groq LLaMA 3.3 70B · Deployed on Railway
+Government of Tamil Nadu Welfare Scheme Intelligence Platform · Powered by Groq LLaMA 3.3 70B & Hybrid RAG
 
 </div>
