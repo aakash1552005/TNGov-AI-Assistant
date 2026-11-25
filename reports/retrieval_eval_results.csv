@@ -1,0 +1,51 @@
+id,cat,query,expected_scheme,is_refusal,BM25-only_rank,BM25-only_rr,BM25-only_hit@4,BM25-only_hit@5,BM25-only_chunks_returned,Dense-only_rank,Dense-only_rr,Dense-only_hit@4,Dense-only_hit@5,Dense-only_chunks_returned,Hybrid_rank,Hybrid_rr,Hybrid_hit@4,Hybrid_hit@5,Hybrid_chunks_returned,hybrid_vs_dense
+q01,Flagship,What is Kalaignar Magalir Urimai Thogai?,Kalaignar Magalir Urimai Thogai Scheme,False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q02,Flagship,Who is eligible for Pudhumai Penn scheme?,Moovalur Ramamirtham Ammiyar Higher Education Assurance Scheme (Pudhumai Penn),False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q03,Flagship,What is Chief Minister's Breakfast Scheme?,Chief Minister's Breakfast Scheme,False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q04,Flagship,Tell me about Makkalai Thedi Maruthuvam scheme.,Makkalai Thedi Maruthuvam Doorstep Healthcare Scheme,False,1,1.0,1,1,2,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q05,Flagship,What benefits are provided under Vidiyal Payanam Scheme?,Free Bus Travel for Women (Vidiyal Payanam Scheme),False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q06,Flagship,What is CMCHIS health insurance coverage limit?,Chief Minister's Comprehensive Health Insurance Scheme,False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q07,Flagship,Explain Old Age Pension scheme in Tamil Nadu.,Tamil Nadu Social Security Pension Schemes (Old Age Pension / Destitute Widow Pension),False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q08,Flagship,What is Destitute Widow Pension assistance?,Tamil Nadu Social Security Pension Schemes (Old Age Pension / Destitute Widow Pension),False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q09,Flagship,What is Assistance for Marriage scheme?,Assistance for Marriage,False,5,0.2,0,1,5,2,0.5,1,1,5,4,0.25,1,1,4,WORSE
+q10,Flagship,What assistance is given for delivery or miscarriage?,Assistance for Delivery / Miscarriage of Pregnancy,False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q11,Colloquial,free bus,Free Bus Travel for Women (Vidiyal Payanam Scheme),False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q12,Colloquial,widow pension,Tamil Nadu Social Security Pension Schemes (Old Age Pension / Destitute Widow Pension),False,1,1.0,1,1,4,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q13,Colloquial,old age pension,Tamil Nadu Social Security Pension Schemes (Old Age Pension / Destitute Widow Pension),False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q14,Colloquial,girl education,Moovalur Ramamirtham Ammiyar Higher Education Assurance Scheme (Pudhumai Penn),False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q15,Colloquial,widow money,Tamil Nadu Social Security Pension Schemes (Old Age Pension / Destitute Widow Pension),False,1,1.0,1,1,1,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q16,Colloquial,girls scholarship,Moovalur Ramamirtham Ammiyar Higher Education Assurance Scheme (Pudhumai Penn),False,N/A,0.0,0,0,1,2,0.5,1,1,5,2,0.5,1,1,4,EQUAL
+q17,Colloquial,kmut 1000,Kalaignar Magalir Urimai Thogai Scheme,False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q18,Colloquial,school breakfast,Chief Minister's Breakfast Scheme,False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q19,Colloquial,doorstep health,Makkalai Thedi Maruthuvam Doorstep Healthcare Scheme,False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q20,Colloquial,health insurance,Chief Minister's Comprehensive Health Insurance Scheme,False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q21,Tamil,மகளிர் உரிமை தொகை திட்டம் பற்றி கூறுக,Kalaignar Magalir Urimai Thogai Scheme,False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q22,Tamil,புதுமைப் பெண் திட்டம் தகுதி என்ன?,Moovalur Ramamirtham Ammiyar Higher Education Assurance Scheme (Pudhumai Penn),False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q23,Tamil,இலவச பஸ் பயணம் திட்டம்,Free Bus Travel for Women (Vidiyal Payanam Scheme),False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q24,Tamil,முதியோர் ஓய்வூதியம் எவ்வளவு?,Tamil Nadu Social Security Pension Schemes (Old Age Pension / Destitute Widow Pension),False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q25,Tamil,விதவை ஓய்வூதிய திட்டம்,Tamil Nadu Social Security Pension Schemes (Old Age Pension / Destitute Widow Pension),False,N/A,0.0,0,0,0,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q26,Tamil,முதலமைச்சர் காலை உணவு திட்டம்,Chief Minister's Breakfast Scheme,False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q27,Tamil,மக்களைத் தேடி மருத்துவம்,Makkalai Thedi Maruthuvam Doorstep Healthcare Scheme,False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q28,Tamil,magalir urimai thogai details,Kalaignar Magalir Urimai Thogai Scheme,False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q29,Tamil,pudhumai pen thittam eligibility,Moovalur Ramamirtham Ammiyar Higher Education Assurance Scheme (Pudhumai Penn),False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q30,Tamil,ilavasa bus payanam,Free Bus Travel for Women (Vidiyal Payanam Scheme),False,1,1.0,1,1,1,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q31,Specialized,What is Unemployment Allowance to Differently Abled Persons?,Unemployment Allowance to Differently Abled Persons,False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q32,Specialized,Spectacles purchase assistance for differently abled,Assistance for Purchase of Spectacles by a Differently Abled Person,False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q33,Specialized,Maintenance allowance for leprosy affected persons,Maintenance Allowance for Leprosy Affected Persons,False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q34,Specialized,Marriage assistance for marrying visually impaired person,Marriage Assistance to Normal Persons Marrying Visually Impaired Persons,False,3,0.3333,1,1,5,4,0.25,1,1,5,3,0.3333,1,1,4,BETTER
+q35,Specialized,Scholarship for children of disabled persons,Scholarship to Son and Daughter of Persons with Disabilities,False,2,0.5,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q36,Specialized,PMEGP scheme eligibility for self employment,Prime Minister's Employment Generation Programme (PMEGP),False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q37,Specialized,UYEGP unemployed youth scheme details,Unemployed Youth Employment Generation Programme (UYEGP),False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q38,Specialized,Job opportunity through private sector job fairs,Job Opportunity Through Private Sector,False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q39,Specialized,Book binder training for visually impaired,Book Binder Training,False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q40,Specialized,Motorised sewing machines distribution scheme,Motorised Sewing Machines,False,1,1.0,1,1,5,1,1.0,1,1,5,1,1.0,1,1,4,EQUAL
+q41,Refusal,What is NASA Mars rover welfare scheme in Tamil Nadu?,[REFUSAL],True,N/A,0.0,0,0,5,N/A,0.0,0,0,5,N/A,0.0,0,0,4,EQUAL
+q42,Refusal,What is the stock price of Infosys today?,[REFUSAL],True,N/A,0.0,0,0,5,N/A,0.0,0,0,5,N/A,0.0,0,0,4,EQUAL
+q43,Refusal,IPL Chennai Super Kings ticket subsidy scheme,[REFUSAL],True,N/A,0.0,0,0,5,N/A,0.0,0,0,5,N/A,0.0,0,0,4,EQUAL
+q44,Refusal,Bitcoin cryptocurrency welfare grant,[REFUSAL],True,N/A,0.0,0,0,5,N/A,0.0,0,0,5,N/A,0.0,0,0,4,EQUAL
+q45,Refusal,Weather forecast and rain prediction for Chennai tomorrow,[REFUSAL],True,N/A,0.0,0,0,5,N/A,0.0,0,0,5,N/A,0.0,0,0,4,EQUAL
+q46,Refusal,Apple iPhone free distribution scheme,[REFUSAL],True,N/A,0.0,0,0,5,N/A,0.0,0,0,5,N/A,0.0,0,0,4,EQUAL
+q47,Refusal,Latest Tamil movie cinema ticket refund scheme,[REFUSAL],True,N/A,0.0,0,0,5,N/A,0.0,0,0,5,N/A,0.0,0,0,4,EQUAL
+q48,Refusal,Netflix free subscription government scheme,[REFUSAL],True,N/A,0.0,0,0,5,N/A,0.0,0,0,5,N/A,0.0,0,0,4,EQUAL
+q49,Refusal,How to cook Chettinad chicken curry recipe,[REFUSAL],True,N/A,0.0,0,0,5,N/A,0.0,0,0,5,N/A,0.0,0,0,4,EQUAL
+q50,Refusal,Horoscope predictions for Leo star sign,[REFUSAL],True,N/A,0.0,0,0,5,N/A,0.0,0,0,5,N/A,0.0,0,0,4,EQUAL

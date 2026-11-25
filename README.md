@@ -49,7 +49,7 @@ Social Security · Women Welfare · Higher Education · Health Insurance · MSME
 |---|---|---|---|
 | **Citizen Web Interface** | Vercel (Next.js 16 / React 19) | ✅ Active | [https://tn-gov-ai-assistant.vercel.app/](https://tn-gov-ai-assistant.vercel.app/) |
 | **Backend REST API** | FastAPI / Docker Container | ✅ Active | `/api/v1/chat`, `/health`, `/admin/stats` |
-| **Vector & BM25 Store** | ChromaDB + rank-bm25 | ✅ Persistent | 1,420 Vector Chunks · 1,420 BM25 Chunks |
+| **Vector & BM25 Store** | ChromaDB + rank-bm25 | ✅ Persistent | 37 Scheme Chunks (Verified Seed) · Up to ~1,420 Chunks (Projected Full Ingestion) |
 | **Relational Persistence** | PostgreSQL | ✅ Active | Chat Sessions, Message History, Telemetry, and Feedback |
 
 ---
@@ -100,7 +100,7 @@ Social Security · Women Welfare · Higher Education · Health Insurance · MSME
               ▼                             ▼
 ┌──────────────────────────┐  ┌──────────────────────────────────────┐
 │  ChromaDB (Persistent)   │  │  BM25 Index (rank-bm25)              │
-│  1,420 Chunks            │  │  1,420 Lexical Chunks                │
+│  37 Chunks (Seed)        │  │  37 Lexical Chunks (Seed)            │
 │  sentence-transformers   │  │  Okapi BM25 Term Weighting           │
 │  all-MiniLM-L6-v2        │  │  Exact Scheme Acronym Boosting       │
 └──────────────────────────┘  └──────────────────────────────────────┘
@@ -246,6 +246,43 @@ Precision@5             : 0.8000
 Recall@5                : 0.8000
 ─────────────────────────────────────────────────────
 ```
+
+> **Note on End-to-End Audit Metrics**: In this end-to-end evaluation, the Precision@5 and Recall@5 figures represent the binary hit rate across all 50 queries, where the 10 out-of-domain queries were correctly refused by the pre-LLM Topic Guard and scored as 0.0 for retrieval chunks. The resulting figures (0.8000 hit rate and 0.7600 MRR) reflect a 100% correct system pass rate (40/40 schemes retrieved + 10/10 out-of-domain queries refused), not retrieval failures.
+
+### Retrieval Benchmark & Ablation Study
+
+Empirical evaluation of the retrieval engine across the 50-query benchmark suite (40 target scheme queries scored, 10 out-of-domain refusal queries excluded). Compares BM25 keyword search, dense vector retrieval (`intfloat/multilingual-e5-large`), and production Hybrid RRF retrieval under identical batched metadata hydration and single-instance latency measurement.
+
+> **Evaluation Scope**: This benchmark was conducted against the seed index of **37 chunks (one chunk per scheme)**. It measures the retrievers' capability to identify the correct scheme among 37 candidates in English and Tamil; these numbers evaluate scheme-level identification and do not claim to describe a larger multi-thousand chunk production index.
+
+```bash
+python scripts/eval_retrieval.py
+```
+
+| Retrieval Method | Hit@4 (95% CI)¹ | Hit@5 (95% CI) | MRR (95% CI) | Scored Queries Hit | Latency P50² | Latency P95² |
+|---|---|---|---|---|---|---|
+| **BM25-only** | 0.9250 [0.8250, 1.0000] | 0.9500 [0.8750, 1.0000] | 0.9008 [0.8175, 0.9750] | 38 / 40 (95.0%) | **1.77 ms** | **3.32 ms** |
+| **Dense-only (`multilingual-e5-large`)** | **1.0000** [1.0000, 1.0000] | **1.0000** [1.0000, 1.0000] | 0.9563 [0.9062, 1.0000] | **40 / 40 (100.0%)** | 278.18 ms | 440.94 ms |
+| **Hybrid (BM25 + Dense RRF)** | **1.0000** [1.0000, 1.0000] | **1.0000** [1.0000, 1.0000] | 0.9521 [0.8958, 1.0000] | **40 / 40 (100.0%)** | 279.79 ms | 439.91 ms |
+
+¹ *Note on Hit@4: Production hybrid retrieval limits its context window to `retrieval_final_context_k = 4` chunks, whereas baseline standalone vector/BM25 queries retrieve 5. Hit@4 provides a normalized context-window comparison.*  
+² *Note on Latency: Measured in-process on CPU (`AMD Ryzen 7 7445HS`, 15.27 GB RAM, Windows 11). Dense and Hybrid latency includes single-threaded CPU query embedding via `intfloat/multilingual-e5-large` (`torch.set_num_threads(1)`).*
+
+#### Language Breakdown (English vs. Tamil)
+
+| Retrieval Method | Language Slice | Hit@4 | Hit@5 | MRR | Scored Hits |
+|---|---|---|---|---|---|
+| **BM25-only** | English (30 queries) | 0.9333 | 0.9667 | 0.9011 | 29 / 30 |
+| | Tamil (10 queries) | 0.9000 | 0.9000 | 0.9000 | 9 / 10 |
+| **Dense-only** | English (30 queries) | 1.0000 | 1.0000 | 0.9417 | 30 / 30 |
+| | Tamil (10 queries) | 1.0000 | 1.0000 | 1.0000 | 10 / 10 |
+| **Hybrid (RRF)** | English (30 queries) | 1.0000 | 1.0000 | 0.9361 | 30 / 30 |
+| | Tamil (10 queries) | 1.0000 | 1.0000 | 1.0000 | 10 / 10 |
+
+#### Empirical Findings & Analysis
+- **Benchmark Saturation**: Both Dense-only and Hybrid achieve a saturated **100% Hit@5 and Hit@4** (40/40), yielding degenerate $[1.0, 1.0]$ bootstrap intervals. Head-to-head across the 40 queries, Hybrid is 1 better (`q34`), 1 worse (`q09`), and 38 identical to Dense-only. The current 40-query seed benchmark is too small and clean to statistically separate Hybrid from Dense-only on MRR.
+- **BM25 Throughput & Coverage**: BM25 provides **~158× faster retrieval** (1.77 ms vs. 279.79 ms P50) while achieving 95% Hit@5, missing only colloquial synonyms not present in the title (`q16`) and ONE Tamil query (`q25` - pure Tamil script query mapped to English document text without transliteration).
+- **Per-Query Log**: Detailed query-by-query rankings, Hit@4/5 values, and Reciprocal Rank Fusion logs are saved to `reports/retrieval_eval_results.csv`.
 
 ---
 
